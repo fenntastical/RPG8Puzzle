@@ -1968,6 +1968,8 @@ MonoBehaviour:
   - {fileID: 1805425588}
   boardState: 010000000200000003000000040000000000000005000000060000000700000008000000
   solver: {fileID: 1183434313}
+  turnsTxt: {fileID: 891614424}
+  Cutin: {fileID: 1654600941}
 --- !u!1 &1505193957
 GameObject:
   m_ObjectHideFlags: 0
@@ -2611,7 +2613,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!95 &1654600942
 Animator:
   serializedVersion: 5

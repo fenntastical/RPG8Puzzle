@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Linq;
+using TMPro;
 
 public class GameMgr : MonoBehaviour
 {
@@ -22,10 +23,27 @@ public class GameMgr : MonoBehaviour
     public PuzzleSolver solver;
 
     float boundxMax = 30f, boundxMin = -30f, boundyMax = 30f, boundyMin = -30f;
+
+    int turns;
+    public TextMeshProUGUI turnsTxt;
+
+    public GameObject Cutin;
+
+    bool gameDone = false;
+    Animator cutinAni;
+    bool aniFinish = false;
+
+    public GameObject currentMonster;
+
     // Start is called before the first frame update
     void Start()
     {
+        turns = 0;
+        gameDone = false;
+        turnsTxt.text = turns.ToString();
         SetupBoard();
+        cutinAni = Cutin.GetComponent<Animator>();
+        Cutin.SetActive(false);
     }
 
     // Update is called once per frame
@@ -77,6 +95,14 @@ public class GameMgr : MonoBehaviour
                 MoveTile("Left");
 
             CheckWin();
+        }
+
+        if (gameDone)
+        {
+            AnimatorStateInfo aInfo = cutinAni.GetCurrentAnimatorStateInfo (0);
+            float NTime = aInfo.normalizedTime;
+
+            if(NTime > 1.0f) Cutin.SetActive(false);
         }
 
     }
@@ -154,6 +180,7 @@ public class GameMgr : MonoBehaviour
     void AnimateSolve(List<string> solution)
     {
         int currentMove = 0;
+        bool moveDone = false;
 
         for (int i = 0; i < solution.Count - 1; i++)
         {
@@ -162,16 +189,6 @@ public class GameMgr : MonoBehaviour
 
             int[] currentBoard = currentString.Split(',').Select(int.Parse).ToArray();
             int[] nextBoard = nextString.Split(',').Select(int.Parse).ToArray();
-
-            // for (int j = 0; j < currentBoard.Length; j++)
-            // {
-            //     Debug.Log(currentBoard[j]);
-            // }
-
-            // for (int j = 0; j < currentBoard.Length; j++)
-            // {
-            //     Debug.Log(nextBoard[j]);
-            // }
 
             int cZeroIndex = 0;
             int nZeroIndex = 0;
@@ -204,7 +221,8 @@ public class GameMgr : MonoBehaviour
 
                     Vector3 zpos = Tiles[tileToMove].transform.position;
                     pos.y -= 30;
-                    Tiles[tileToMove].transform.position = pos;
+                    // Tiles[tileToMove].transform.position = pos;
+                    StartCoroutine(LerpPosition(Tiles[tileToMove], pos, .5f));
 
 
                     boardState[cZeroIndex] = boardState[nZeroIndex];
@@ -225,7 +243,8 @@ public class GameMgr : MonoBehaviour
 
                     Vector3 zpos = Tiles[tileToMove].transform.position;
                     pos.y += 30;
-                    Tiles[tileToMove].transform.position = pos;
+                    // Tiles[tileToMove].transform.position = pos;
+                    StartCoroutine(LerpPosition(Tiles[tileToMove], pos, .5f));
 
 
                     boardState[cZeroIndex] = boardState[nZeroIndex];
@@ -246,7 +265,8 @@ public class GameMgr : MonoBehaviour
 
                     Vector3 zpos = Tiles[tileToMove].transform.position;
                     pos.x -= 30;
-                    Tiles[tileToMove].transform.position = pos;
+                    // Tiles[tileToMove].transform.position = pos;
+                    StartCoroutine(LerpPosition(Tiles[tileToMove], pos, .5f));
 
 
                     boardState[cZeroIndex] = boardState[nZeroIndex];
@@ -267,8 +287,8 @@ public class GameMgr : MonoBehaviour
 
                     Vector3 zpos = Tiles[tileToMove].transform.position;
                     pos.x += 30;
-                    Tiles[tileToMove].transform.position = pos;
-
+                    // Tiles[tileToMove].transform.position = pos;
+                    StartCoroutine(LerpPosition(Tiles[tileToMove], pos, .5f));
 
                     boardState[cZeroIndex] = boardState[nZeroIndex];
                     boardState[nZeroIndex] = 0;
@@ -283,9 +303,12 @@ public class GameMgr : MonoBehaviour
     {
         string result = string.Join("", boardState);
         Debug.Log("Result: " + result);
-        if (result == goalState)
+        if (result == goalState && gameDone == false)
         {
             Debug.Log("You WIN!!!");
+            Cutin.SetActive(true);
+            // cutinAni = Cutin.GetComponent<Animator>();
+            gameDone = true;
         }
     }
     void MoveTile(string direction)
@@ -315,7 +338,8 @@ public class GameMgr : MonoBehaviour
 
                     Vector3 pos = Tiles[selectedTile].transform.position;
                     pos.y += 30;
-                    Tiles[selectedTile].transform.position = pos;
+                    StartCoroutine(LerpPosition(Tiles[selectedTile], pos, .5f));
+                    // Tiles[selectedTile].transform.position = pos;
 
                     for (int j = 0; j < Tiles.Count; j++)
                     {
@@ -324,6 +348,7 @@ public class GameMgr : MonoBehaviour
                             Vector3 zpos = Tiles[j].transform.position;
                             pos.y -= 30;
                             Tiles[j].transform.position = pos;
+                            
                         }
 
                     }
@@ -331,6 +356,8 @@ public class GameMgr : MonoBehaviour
                     int zeroHold = foundIndex - 3;
                     boardState[zeroHold] = selectedTile;
                     boardState[foundIndex] = 0;
+                    turns += 1;
+                    turnsTxt.text = turns.ToString();
                 }
                 // }
                 break;
@@ -354,7 +381,8 @@ public class GameMgr : MonoBehaviour
 
                     Vector3 pos = Tiles[selectedTile].transform.position;
                     pos.y -= 30;
-                    Tiles[selectedTile].transform.position = pos;
+                    // Tiles[selectedTile].transform.position = pos;
+                    StartCoroutine(LerpPosition(Tiles[selectedTile], pos, .5f));
 
                     for (int j = 0; j < Tiles.Count; j++)
                     {
@@ -370,6 +398,8 @@ public class GameMgr : MonoBehaviour
                     int zeroHold = foundIndex + 3;
                     boardState[zeroHold] = selectedTile;
                     boardState[foundIndex] = 0;
+                    turns += 1;
+                    turnsTxt.text = turns.ToString();
                 }
                 break;
             case "Right":
@@ -395,7 +425,8 @@ public class GameMgr : MonoBehaviour
 
                     Vector3 pos = Tiles[selectedTile ].transform.position;
                     pos.x += 30;
-                    Tiles[selectedTile].transform.position = pos;
+                    // Tiles[selectedTile].transform.position = pos;
+                    StartCoroutine(LerpPosition(Tiles[selectedTile], pos, .5f));
 
                     for (int j = 0; j < Tiles.Count; j++)
                     {
@@ -411,6 +442,8 @@ public class GameMgr : MonoBehaviour
                     int zeroHold = foundIndex + 1;
                     boardState[zeroHold] = selectedTile;
                     boardState[foundIndex] = 0;
+                    turns += 1;
+                    turnsTxt.text = turns.ToString();
                 }
                 break;
             case "Left":
@@ -436,7 +469,8 @@ public class GameMgr : MonoBehaviour
 
                     Vector3 pos = Tiles[selectedTile ].transform.position;
                     pos.x -= 30;
-                    Tiles[selectedTile ].transform.position = pos;
+                    // Tiles[selectedTile ].transform.position = pos;
+                    StartCoroutine(LerpPosition(Tiles[selectedTile], pos, .5f));
 
                     for (int j = 0; j < Tiles.Count; j++)
                     {
@@ -452,10 +486,26 @@ public class GameMgr : MonoBehaviour
                     int zeroHold = foundIndex - 1;
                     boardState[zeroHold] = selectedTile;
                     boardState[foundIndex] = 0;
+                    turns += 1;
+                    turnsTxt.text = turns.ToString();
                 }
                 break;
         }
     }
     
+
+    IEnumerator LerpPosition(TileMgr tile, Vector3 targetPosition, float duration)
+    {
+        float time = 0;
+        Vector3 startPosition = tile.transform.position;
+
+        while (time < duration)
+        {
+            tile.transform.position = Vector3.Lerp(startPosition, targetPosition, time / duration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        tile.transform.position = targetPosition;
+    }
     
 }
