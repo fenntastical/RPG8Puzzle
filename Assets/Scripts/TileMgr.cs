@@ -20,20 +20,5 @@ public class TileMgr : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        mousePos = Input.mousePosition;
-
-        Ray mouseRay = Camera.main.ScreenPointToRay(mousePos);
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            rayHit = Physics2D.Raycast(mouseRay.origin, mouseRay.direction);
-            clickObject = rayHit ? rayHit.collider.transform : null;
-
-            if (clickObject)
-            {
-                gameMgr.selectedTile = tileNumber;
-            }
-        }
-
     }
 }

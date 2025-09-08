@@ -1,38 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.U2D.Animation;
 using UnityEngine;
 
 public class PuzzleSolver : MonoBehaviour
-{
-    // // Start is called before the first frame update
-    // void Start()
-    // {
-        
-    // }
-
-    // // Update is called once per frame
-    // void Update()
-    // {
-        
-    // }
-}
-
-class PuzzleState
-{
-    public string Board;  // Board stored as a string (e.g., "123456780")
-    public int X, Y;  // Position of '0'
-    public int Depth; // BFS depth level
-
-    public PuzzleState(string board, int x, int y, int depth)
-    {
-        Board = board;
-        X = x;
-        Y = y;
-        Depth = depth;
-    }
-}
-
-class EightPuzzleBFS
 {
     const int N = 3;
 
@@ -42,7 +13,30 @@ class EightPuzzleBFS
 
     static readonly string GOAL_STATE = "123456780"; // Goal state stored as string
 
-    // Function to convert 2D board to a string representation
+    public class PuzzleState
+    {
+        public string Board;  // Board stored as a string (e.g., "123456780")
+        public int X, Y;      // Position of '0'
+        public int Depth;     // BFS depth level
+        public PuzzleState Parent;
+
+        public PuzzleState(string board, int x, int y, int depth, PuzzleState parent = null)
+        {
+            Board = board;
+            X = x;
+            Y = y;
+            Depth = depth;
+            Parent = parent;
+        }
+    }
+
+    // Called when the scene starts
+    void Start()
+    {
+        
+    }
+
+    // Convert 2D board to string representation
     static string BoardToString(int[,] board)
     {
         char[] sb = new char[9];
@@ -53,41 +47,59 @@ class EightPuzzleBFS
         return new string(sb);
     }
 
-    // Function to print board from string representation
-    // static void PrintBoard(string board)
-    // {
-    //     for (int i = 0; i < 9; i++)
-    //     {
-    //         Console.Write(board[i] + " ");
-    //         if ((i + 1) % 3 == 0)
-    //             Console.WriteLine();
-    //     }
-    //     Console.WriteLine("--------");
-    // }
+    // Print board from string representation
+    static void PrintBoard(string board)
+    {
+        // string rowStr = "";
+        // for (int i = 0; i < 9; i++)
+        // {
+        //     rowStr += board[i] + " ";
+        //     if ((i + 1) % 3 == 0)
+        //     {
+        //         Debug.Log(rowStr);
+        //         rowStr = "";
+        //     }
+        // }
 
-    // BFS function to solve the 8-puzzle problem
-    static void SolvePuzzleBFS(int[,] start, int x, int y)
+        Debug.Log(board);
+        // Debug.Log("--------");
+    }
+
+    // Reconstruct path from goal back to start
+    static List<string> ReconstructPath(PuzzleState goalState)
+    {
+        List<string> path = new List<string>();
+        PuzzleState curr = goalState;
+
+        while (curr != null)
+        {
+            path.Add(curr.Board);
+            curr = curr.Parent;
+        }
+
+        path.Reverse(); // Start → Goal
+        return path;
+    }
+
+    // BFS function to solve the puzzle
+    public List<string> SolvePuzzleBFS(int[,] start, int x, int y)
     {
         Queue<PuzzleState> queue = new Queue<PuzzleState>();
         HashSet<string> visited = new HashSet<string>();
 
         string startBoard = BoardToString(start);
-        queue.Enqueue(new PuzzleState(startBoard, x, y, 0));
+        PuzzleState startState = new PuzzleState(startBoard, x, y, 0);
+        queue.Enqueue(startState);
         visited.Add(startBoard);
 
         while (queue.Count > 0)
         {
             PuzzleState curr = queue.Dequeue();
 
-            // Print the current board state
-            // Console.WriteLine("Depth: " + curr.Depth);
-            // PrintBoard(curr.Board);
-
             // Check if goal state is reached
             if (curr.Board == GOAL_STATE)
             {
-                // Console.WriteLine("Goal state reached at depth " + curr.Depth);
-                return;
+                return ReconstructPath(curr);
             }
 
             char[] boardArray = curr.Board.ToCharArray();
@@ -108,42 +120,24 @@ class EightPuzzleBFS
 
                     string newBoard = new string(boardArray);
 
-                    // If this state has not been visited before, add to queue
                     if (!visited.Contains(newBoard))
                     {
                         visited.Add(newBoard);
-                        queue.Enqueue(new PuzzleState(newBoard, newX, newY, curr.Depth + 1));
+                        queue.Enqueue(new PuzzleState(newBoard, newX, newY, curr.Depth + 1, curr));
                     }
 
-                    // Swap back to restore original board for next iteration
-                    temp = boardArray[zeroPos];
-                    boardArray[zeroPos] = boardArray[swapPos];
-                    boardArray[swapPos] = temp;
+                    // Swap back
+                    boardArray[swapPos] = boardArray[zeroPos];
+                    boardArray[zeroPos] = temp;
                 }
             }
         }
 
-        // Console.WriteLine("No solution found (BFS Brute Force reached depth limit)");
+        return null; // No solution found
     }
 
     void PuzzleRandomizer()
     {
         
-    }
-
-    // Driver Code
-    static void Main()
-    {
-        int[,] start = {
-            { 1, 2, 3 },
-            { 4, 0, 5 },
-            { 6, 7, 8 }
-        }; // Initial state
-        int x = 1, y = 1; // Position of the empty tile (0)
-
-        // Console.WriteLine("Initial State:");
-        // PrintBoard(BoardToString(start));
-
-        SolvePuzzleBFS(start, x, y);
     }
 }

@@ -1,25 +1,460 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
+using System.Linq;
 
 public class GameMgr : MonoBehaviour
 {
 
-    public int selectedTile;
-    public List<GameObject> Tiles;
+    public int selectedTile = 10;
+    // public List<GameObject> mainTiles;
+    public List<TileMgr> Tiles;
     float tileMove = 22.5f;
+    float boardPos;
 
-    float boundxMax = 22.5f, boundxMin = -22.5f, boundyMax = 22.5f, boundyMin = -22.5f; 
+    public int[] boardState;
+    string goalState = "123456780";
+
+    bool selected = false;
+
+
+    public PuzzleSolver solver;
+
+    float boundxMax = 30f, boundxMin = -30f, boundyMax = 30f, boundyMin = -30f;
     // Start is called before the first frame update
     void Start()
     {
-
+        SetupBoard();
     }
 
     // Update is called once per frame
     void Update()
     {
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 mousePos = Input.mousePosition;
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
+
+            RaycastHit2D hit = Physics2D.Raycast(worldPos, Vector2.zero);
+
+            if (hit.collider != null)
+            {
+                TileMgr tile = hit.collider.GetComponent<TileMgr>();
+                if (tile != null)
+                {
+                    selectedTile = tile.tileNumber;
+                    foreach (TileMgr tileChange in Tiles)
+                    {
+                        tileChange.GetComponent<SpriteRenderer>().color = Color.white;
+                    }
+                    tile.GetComponent<SpriteRenderer>().color = Color.red;
+                    Debug.Log("Hit " + tile.tileNumber);
+                    selected = true;
+                }
+                if (tile == null || tile.tileNumber == 0)
+                {
+                    foreach (TileMgr tileChange in Tiles)
+                    {
+                        tileChange.GetComponent<SpriteRenderer>().color = Color.white;
+                    }
+                    selectedTile = 10;
+                    selected = false;
+                }
+            }
+        }
+
+        if (selected)
+        {
+            if (Input.GetKeyDown("w"))
+                MoveTile("Up");
+            if (Input.GetKeyDown("d"))
+                MoveTile("Right");
+            if (Input.GetKeyDown("s"))
+                MoveTile("Down");
+            if (Input.GetKeyDown("a"))
+                MoveTile("Left");
+
+            CheckWin();
+        }
+
+    }
+
+    void SetupBoard()
+    {
+        boundxMax += boardPos;
+        boundxMin += boardPos;
+        boundyMax += boardPos;
+        boundyMin += boardPos;
+
+        float[] setupPosX = { boundxMin, boardPos, boundxMax, boundxMin, boardPos, boundxMax, boundxMin, boardPos, boundxMax, };
+        float[] setupPosY = { boundyMax, boundyMax, boundyMax, boardPos, boardPos, boardPos, boundyMin, boundyMin, boundyMin };
+
+        // foreach (var tile in boardState)
+        // {
+        for (int i = 0; i < boardState.Length; i++)
+        {
+            for (int j = 0; j < Tiles.Count; j++)
+            {
+                if (boardState[i] == Tiles[j].tileNumber)
+                {
+                    Vector3 pos = Tiles[j].transform.position;
+                    pos.x = setupPosX[i];
+                    pos.y = setupPosY[i];
+                    Tiles[j].transform.position = pos;
+                }
+
+            }
+        }
+        // }
+    }
+
+    public void SolvePuzzle()
+    {
+        int[,] CurrentPuzzle = {
+            { boardState[0], boardState[1], boardState[2] },
+            { boardState[3], boardState[4], boardState[5] },
+            { boardState[6], boardState[7], boardState[8] }
+        };
+
+        int findingZero = 0;
+        for (int k = 0; k < 9; k++)
+        {
+            if (boardState[k] == 0)
+                findingZero = k;
+        }
+
+        int x = findingZero / 3;   // row
+        int y = findingZero % 3;   // col
+        Debug.Log("Zero at (row=" + x + ", col=" + y + ")");
+        List<string> solutionPath = solver.SolvePuzzleBFS(CurrentPuzzle, x, y);
+
+        if (solutionPath != null)
+        {
+            Debug.Log("Solution found in " + (solutionPath.Count - 1) + " moves.");
+            foreach (string state in solutionPath)
+            {
+                // Debug.Log(state);
+                // string formatted = string.Join(",", state.ToCharArray());
+                // Debug.Log(formatted);
+            }
+
+            AnimateSolve(solutionPath);
+            CheckWin();
+        }
+        else
+        {
+            Debug.Log("No solution exists.");
+        }
+
+        // AnimateSolve(solutionPath);
+    }
+
+    void AnimateSolve(List<string> solution)
+    {
+        int currentMove = 0;
+
+        for (int i = 0; i < solution.Count - 1; i++)
+        {
+            string currentString = string.Join(",", solution[i].ToCharArray());
+            string nextString = string.Join(",", solution[i + 1].ToCharArray());
+
+            int[] currentBoard = currentString.Split(',').Select(int.Parse).ToArray();
+            int[] nextBoard = nextString.Split(',').Select(int.Parse).ToArray();
+
+            // for (int j = 0; j < currentBoard.Length; j++)
+            // {
+            //     Debug.Log(currentBoard[j]);
+            // }
+
+            // for (int j = 0; j < currentBoard.Length; j++)
+            // {
+            //     Debug.Log(nextBoard[j]);
+            // }
+
+            int cZeroIndex = 0;
+            int nZeroIndex = 0;
+            for (int j = 0; j < 9; j++)
+            {
+                if (currentBoard[j] == 0)
+                    cZeroIndex = j;
+            }
+
+            for (int j = 0; j < 9; j++)
+            {
+                if (nextBoard[j] == 0)
+                    nZeroIndex = j;
+            }
+
+            // Debug.Log(cZeroIndex);
+            // Debug.Log(nZeroIndex);
+            // if
+            if (nZeroIndex + 3 < 9)
+            {
+                if (currentBoard[nZeroIndex + 3] == nextBoard[nZeroIndex])
+                {
+                    Debug.Log("Down " + currentMove);
+
+                    Vector3 pos = Tiles[0].transform.position;
+                    pos.y += 30;
+                    Tiles[0].transform.position = pos;
+
+                    int tileToMove = currentBoard[nZeroIndex];
+
+                    Vector3 zpos = Tiles[tileToMove].transform.position;
+                    pos.y -= 30;
+                    Tiles[tileToMove].transform.position = pos;
+
+
+                    boardState[cZeroIndex] = boardState[nZeroIndex];
+                    boardState[nZeroIndex] = 0;
+                }
+            }
+
+            if (nZeroIndex - 3 > 0)
+            {
+                if (currentBoard[nZeroIndex - 3] == nextBoard[nZeroIndex])
+                {
+                    Debug.Log("UP " + currentMove);
+                    Vector3 pos = Tiles[0].transform.position;
+                    pos.y -= 30;
+                    Tiles[0].transform.position = pos;
+
+                    int tileToMove = currentBoard[nZeroIndex];
+
+                    Vector3 zpos = Tiles[tileToMove].transform.position;
+                    pos.y += 30;
+                    Tiles[tileToMove].transform.position = pos;
+
+
+                    boardState[cZeroIndex] = boardState[nZeroIndex];
+                    boardState[nZeroIndex] = 0;
+                }
+            }
+
+            if (nZeroIndex - 1 > 0)
+            {
+                if (currentBoard[nZeroIndex - 1] == nextBoard[nZeroIndex])
+                {
+                    Debug.Log("Left " + currentMove);
+                    Vector3 pos = Tiles[0].transform.position;
+                    pos.x += 30;
+                    Tiles[0].transform.position = pos;
+
+                    int tileToMove = currentBoard[nZeroIndex];
+
+                    Vector3 zpos = Tiles[tileToMove].transform.position;
+                    pos.x -= 30;
+                    Tiles[tileToMove].transform.position = pos;
+
+
+                    boardState[cZeroIndex] = boardState[nZeroIndex];
+                    boardState[nZeroIndex] = 0;
+                }
+            }
+
+            if (nZeroIndex + 1 < 9)
+            {
+                if (currentBoard[nZeroIndex + 1] == nextBoard[nZeroIndex])
+                {
+                    Debug.Log("Right " + currentMove);
+                    Vector3 pos = Tiles[0].transform.position;
+                    pos.x -= 30;
+                    Tiles[0].transform.position = pos;
+
+                    int tileToMove = currentBoard[nZeroIndex];
+
+                    Vector3 zpos = Tiles[tileToMove].transform.position;
+                    pos.x += 30;
+                    Tiles[tileToMove].transform.position = pos;
+
+
+                    boardState[cZeroIndex] = boardState[nZeroIndex];
+                    boardState[nZeroIndex] = 0;
+                }
+            }
+            currentMove++;
+            
+        }
+    }
+
+    void CheckWin()
+    {
+        string result = string.Join("", boardState);
+        Debug.Log("Result: " + result);
+        if (result == goalState)
+        {
+            Debug.Log("You WIN!!!");
+        }
+    }
+    void MoveTile(string direction)
+    {
+        int foundIndex = 0;
+        int foundZero = 0;
+        int indexCheck = 0;
+
+        switch (direction)
+        {
+            case "Up":
+                // int foundIndex;
+                for (int i = 0; i < 9; i++)
+                {
+                    if (boardState[i] == selectedTile)
+                        foundIndex = i;
+                }
+
+                indexCheck = foundIndex - 3;
+                if (indexCheck < 0)
+                    break;
+
+
+                // Debug.Log(boardState[foundIndex - 3]);
+                if (boardState[foundIndex - 3] == 0)
+                {
+
+                    Vector3 pos = Tiles[selectedTile].transform.position;
+                    pos.y += 30;
+                    Tiles[selectedTile].transform.position = pos;
+
+                    for (int j = 0; j < Tiles.Count; j++)
+                    {
+                        if (Tiles[j].tileNumber == 0)
+                        {
+                            Vector3 zpos = Tiles[j].transform.position;
+                            pos.y -= 30;
+                            Tiles[j].transform.position = pos;
+                        }
+
+                    }
+
+                    int zeroHold = foundIndex - 3;
+                    boardState[zeroHold] = selectedTile;
+                    boardState[foundIndex] = 0;
+                }
+                // }
+                break;
+            case "Down":
+                // int foundIndex;
+                for (int i = 0; i < 9; i++)
+                {
+                    if (boardState[i] == selectedTile)
+                        foundIndex = i;
+                    
+                }
+
+                indexCheck = foundIndex + 3;
+                if (indexCheck > 8)
+                    break;
+
+                // Debug.Log(boardState[foundIndex + 3]);
+                // Debug.Log("Down");
+                if (boardState[foundIndex + 3] == 0)
+                {
+
+                    Vector3 pos = Tiles[selectedTile].transform.position;
+                    pos.y -= 30;
+                    Tiles[selectedTile].transform.position = pos;
+
+                    for (int j = 0; j < Tiles.Count; j++)
+                    {
+                        if (Tiles[j].tileNumber == 0)
+                        {
+                            Vector3 zpos = Tiles[j].transform.position;
+                            pos.y += 30;
+                            Tiles[j].transform.position = pos;
+                        }
+
+                    }
+
+                    int zeroHold = foundIndex + 3;
+                    boardState[zeroHold] = selectedTile;
+                    boardState[foundIndex] = 0;
+                }
+                break;
+            case "Right":
+                for (int i = 0; i < 9; i++)
+                {
+                    if (boardState[i] == selectedTile)
+                        foundIndex = i;
+                }
+                for (int k = 0; k < 9; k++)
+                {
+                    if (boardState[k] == 0)
+                        foundZero = k;
+                }
+
+                indexCheck = foundIndex + 1;
+                if (indexCheck > 8)
+                    break;
+
+                // Debug.Log(boardState[foundIndex + 1]);
+                // Debug.Log(foundZero);
+                if (boardState[foundIndex + 1] == 0 && foundZero != 3 && foundZero != 6)
+                {
+
+                    Vector3 pos = Tiles[selectedTile ].transform.position;
+                    pos.x += 30;
+                    Tiles[selectedTile].transform.position = pos;
+
+                    for (int j = 0; j < Tiles.Count; j++)
+                    {
+                        if (Tiles[j].tileNumber == 0)
+                        {
+                            Vector3 zpos = Tiles[j].transform.position;
+                            pos.x -= 30;
+                            Tiles[j].transform.position = pos;
+                        }
+
+                    }
+
+                    int zeroHold = foundIndex + 1;
+                    boardState[zeroHold] = selectedTile;
+                    boardState[foundIndex] = 0;
+                }
+                break;
+            case "Left":
+                for (int i = 0; i < 9; i++)
+                {
+                    if (boardState[i] == selectedTile)
+                        foundIndex = i;
+                }
+                for (int k = 0; k < 9; k++)
+                {
+                    if (boardState[k] == 0)
+                        foundZero = k;
+                }
+
+                indexCheck = foundIndex - 1;
+                if (indexCheck < 0)
+                    break;
+
+                // Debug.Log(boardState[foundIndex - 1]);
+                // Debug.Log(foundZero);
+                if (boardState[foundIndex - 1] == 0 && foundZero != 2 && foundZero != 5)
+                {
+
+                    Vector3 pos = Tiles[selectedTile ].transform.position;
+                    pos.x -= 30;
+                    Tiles[selectedTile ].transform.position = pos;
+
+                    for (int j = 0; j < Tiles.Count; j++)
+                    {
+                        if (Tiles[j].tileNumber == 0)
+                        {
+                            Vector3 zpos = Tiles[j].transform.position;
+                            pos.x += 30;
+                            Tiles[j].transform.position = pos;
+                        }
+
+                    }
+
+                    int zeroHold = foundIndex - 1;
+                    boardState[zeroHold] = selectedTile;
+                    boardState[foundIndex] = 0;
+                }
+                break;
+        }
     }
     
     
