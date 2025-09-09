@@ -141,6 +141,7 @@ public class GameMgr : MonoBehaviour
                     turnsTxt.text = turns.ToString();
                     cutinDone = false;
                     gameDone = false;
+                    monsterDefeated = false;
                 }
             }
 
@@ -181,8 +182,22 @@ public class GameMgr : MonoBehaviour
 
     public void SpawnMonster()
     {
-        int randomM = Random.Range(0, 1);
-        currentMonster = Instantiate(monsterList[randomM], new Vector3(106.2f, -39.4f, 0), transform.rotation);
+        int randomM = Random.Range(0, 3);
+        switch (randomM)
+        {
+            case 0:
+                currentMonster = Instantiate(monsterList[0], new Vector3(106.2f, -35f, 0), transform.rotation);
+                break;
+
+            case 1:
+                currentMonster = Instantiate(monsterList[1], new Vector3(106.2f, -3.1f, 0), transform.rotation);
+                break;
+            
+            case 2:
+                currentMonster = Instantiate(monsterList[2], new Vector3(106.2f, -8.7f, 0), transform.rotation);
+            break;
+        }
+        // currentMonster = Instantiate(monsterList[randomM], new Vector3(106.2f, -35f, 0), transform.rotation);
     }
 
     public void SolvePuzzle()
@@ -565,7 +580,7 @@ public class GameMgr : MonoBehaviour
 
     void RandomizePuzzle()
     {
-        int ScrambleNum = Random.Range(5, 15);
+        int ScrambleNum = Random.Range(15, 30);
         int foundZ = 0;
 
         for (int i = 0; i <= ScrambleNum; i++)
