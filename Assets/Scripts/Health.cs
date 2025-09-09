@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    public GameObject healthSprite;
+    // public GameObject healthSprite;
     public List<GameObject> healthList;
     public int health;
     public GameMgr gameMgr;
@@ -45,9 +46,23 @@ public class Health : MonoBehaviour
         
     }
 
-    void DealDamage(int damage)
+    public void DealDamage(int damage)
     {
         int newHealth = health - damage;
+        if (newHealth > 0)
+        {
+            while (health != newHealth)
+            {
+                healthList[health-1].SetActive(false);
+                health -= 1;
+            }
+        }
+
+        if (newHealth <= 0)
+        {
+            gameMgr.monsterDefeated = true;
+            gameObject.SetActive(false);
+        }
         
     }
 }

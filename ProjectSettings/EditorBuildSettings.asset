@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MainScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/Scenes/TitleScreen.unity
+    guid: 0010eb3db9fffcd4197e08fbbad459fc
+  - enabled: 1
+    path: Assets/Scenes/ChooseWeapon.unity
+    guid: 5948bd9bebb470344b10f6241aa42fd2
+  - enabled: 1
+    path: Assets/Scenes/SwordTutorial.unity
+    guid: 15da35421f9e74b4daff1d2517ce4473
+  - enabled: 1
+    path: Assets/Scenes/SwordScene.unity
+    guid: be5a2373239f0604aa12f96dda744021
   m_configObjects: {}

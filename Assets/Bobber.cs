@@ -14,9 +14,12 @@ public class Bobber : MonoBehaviour
 
     public string pathDescription;
 
+    public GameObject confirm;
+
     void Start()
     {
         this.originalY = this.transform.position.y;
+        confirm.SetActive(false);
     }
 
     void Update()
@@ -30,6 +33,7 @@ public class Bobber : MonoBehaviour
     {
         textbox.text = pathDescription;
         textbox.fontSize = 100;
+        confirm.SetActive(true);
         // Vector3 pos = textbox.transform.position;
         //             pos.y = 0;
         //             textbox.transform.position = pos;

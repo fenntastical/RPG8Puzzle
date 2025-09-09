@@ -31,9 +31,16 @@ public class GameMgr : MonoBehaviour
 
     bool gameDone = false;
     Animator cutinAni;
+    bool cutinDone = false;
+    [HideInInspector]
+    public bool monsterDefeated = false;
     bool aniFinish = false;
 
+    public List<GameObject> monsterList;
     public GameObject currentMonster;
+
+    public GameObject hintBox;
+    public TextMeshProUGUI hintText;
 
     // Start is called before the first frame update
     void Start()
@@ -41,9 +48,12 @@ public class GameMgr : MonoBehaviour
         turns = 0;
         gameDone = false;
         turnsTxt.text = turns.ToString();
+        // RandomizePuzzle();
         SetupBoard();
+        SpawnMonster();
         cutinAni = Cutin.GetComponent<Animator>();
         Cutin.SetActive(false);
+        hintBox.SetActive(false);
     }
 
     // Update is called once per frame
@@ -99,10 +109,41 @@ public class GameMgr : MonoBehaviour
 
         if (gameDone)
         {
-            AnimatorStateInfo aInfo = cutinAni.GetCurrentAnimatorStateInfo (0);
+            hintBox.SetActive(false);
+            AnimatorStateInfo aInfo = cutinAni.GetCurrentAnimatorStateInfo(0);
             float NTime = aInfo.normalizedTime;
 
-            if(NTime > 1.0f) Cutin.SetActive(false);
+            if (NTime > 1.0f)
+            {
+                Cutin.SetActive(false);
+                cutinDone = true;
+            }
+
+            if (cutinDone)
+            {
+
+                if (monsterDefeated == false)
+                {
+                    RandomizePuzzle();
+                    SetupBoard();
+                    turns = 0;
+                    turnsTxt.text = turns.ToString();
+                    cutinDone = false;
+                    gameDone = false;
+                }
+
+                if (monsterDefeated == true)
+                {
+                    RandomizePuzzle();
+                    SetupBoard();
+                    SpawnMonster();
+                    turns = 0;
+                    turnsTxt.text = turns.ToString();
+                    cutinDone = false;
+                    gameDone = false;
+                }
+            }
+
         }
 
     }
@@ -133,7 +174,15 @@ public class GameMgr : MonoBehaviour
 
             }
         }
+
+        // SpawnMonster();
         // }
+    }
+
+    public void SpawnMonster()
+    {
+        int randomM = Random.Range(0, 1);
+        currentMonster = Instantiate(monsterList[randomM], new Vector3(106.2f, -39.4f, 0), transform.rotation);
     }
 
     public void SolvePuzzle()
@@ -161,7 +210,7 @@ public class GameMgr : MonoBehaviour
             Debug.Log("Solution found in " + (solutionPath.Count - 1) + " moves.");
             foreach (string state in solutionPath)
             {
-                // Debug.Log(state);
+                Debug.Log(state);
                 // string formatted = string.Join(",", state.ToCharArray());
                 // Debug.Log(formatted);
             }
@@ -230,7 +279,7 @@ public class GameMgr : MonoBehaviour
                 }
             }
 
-            if (nZeroIndex - 3 > 0)
+            if (nZeroIndex - 3 > -1)
             {
                 if (currentBoard[nZeroIndex - 3] == nextBoard[nZeroIndex])
                 {
@@ -252,7 +301,7 @@ public class GameMgr : MonoBehaviour
                 }
             }
 
-            if (nZeroIndex - 1 > 0)
+            if (nZeroIndex - 1 > -1)
             {
                 if (currentBoard[nZeroIndex - 1] == nextBoard[nZeroIndex])
                 {
@@ -295,7 +344,11 @@ public class GameMgr : MonoBehaviour
                 }
             }
             currentMove++;
-            
+
+            string word = boardState.Select(i => i.ToString()).Aggregate((i, j) => i + j);
+            Debug.Log(word);
+
+
         }
     }
 
@@ -308,6 +361,8 @@ public class GameMgr : MonoBehaviour
             Debug.Log("You WIN!!!");
             Cutin.SetActive(true);
             // cutinAni = Cutin.GetComponent<Animator>();
+            Health mHealth = currentMonster.GetComponent<Health>();
+            mHealth.DealDamage(2);
             gameDone = true;
         }
     }
@@ -348,7 +403,7 @@ public class GameMgr : MonoBehaviour
                             Vector3 zpos = Tiles[j].transform.position;
                             pos.y -= 30;
                             Tiles[j].transform.position = pos;
-                            
+
                         }
 
                     }
@@ -367,7 +422,7 @@ public class GameMgr : MonoBehaviour
                 {
                     if (boardState[i] == selectedTile)
                         foundIndex = i;
-                    
+
                 }
 
                 indexCheck = foundIndex + 3;
@@ -423,7 +478,7 @@ public class GameMgr : MonoBehaviour
                 if (boardState[foundIndex + 1] == 0 && foundZero != 3 && foundZero != 6)
                 {
 
-                    Vector3 pos = Tiles[selectedTile ].transform.position;
+                    Vector3 pos = Tiles[selectedTile].transform.position;
                     pos.x += 30;
                     // Tiles[selectedTile].transform.position = pos;
                     StartCoroutine(LerpPosition(Tiles[selectedTile], pos, .5f));
@@ -467,7 +522,7 @@ public class GameMgr : MonoBehaviour
                 if (boardState[foundIndex - 1] == 0 && foundZero != 2 && foundZero != 5)
                 {
 
-                    Vector3 pos = Tiles[selectedTile ].transform.position;
+                    Vector3 pos = Tiles[selectedTile].transform.position;
                     pos.x -= 30;
                     // Tiles[selectedTile ].transform.position = pos;
                     StartCoroutine(LerpPosition(Tiles[selectedTile], pos, .5f));
@@ -492,7 +547,7 @@ public class GameMgr : MonoBehaviour
                 break;
         }
     }
-    
+
 
     IEnumerator LerpPosition(TileMgr tile, Vector3 targetPosition, float duration)
     {
@@ -506,6 +561,220 @@ public class GameMgr : MonoBehaviour
             yield return null;
         }
         tile.transform.position = targetPosition;
+    }
+
+    void RandomizePuzzle()
+    {
+        int ScrambleNum = Random.Range(5, 15);
+        int foundZ = 0;
+
+        for (int i = 0; i <= ScrambleNum; i++)
+        {
+            int randomDirection = Random.Range(0, 4);
+
+            switch (randomDirection)
+            {
+                case 0:
+                    {
+                        for (int k = 0; k < 9; k++)
+                        {
+                            if (boardState[k] == 0)
+                                foundZ = k;
+                        }
+                        int indexCheck = 0;
+                        indexCheck = foundZ + 3;
+                        if (indexCheck > 8)
+                        { break; }
+
+                        Vector3 pos = Tiles[0].transform.position;
+                        pos.y -= 30;
+                        Tiles[0].transform.position = pos;
+
+                        int tileToMove = boardState[foundZ + 3];
+
+                        Vector3 zpos = Tiles[tileToMove].transform.position;
+                        pos.y += 30;
+                        Tiles[tileToMove].transform.position = pos;
+
+
+                        boardState[foundZ] = boardState[foundZ + 3];
+                        boardState[foundZ + 3] = 0;
+                        break;
+                    }
+                // break;
+
+                case 1:
+                    {
+                        for (int k = 0; k < 9; k++)
+                        {
+                            if (boardState[k] == 0)
+                                foundZ = k;
+                        }
+                        int indexCheck = 0;
+                        indexCheck = foundZ - 3;
+                        if (indexCheck < 0)
+                            break;
+
+                        Vector3 pos = Tiles[0].transform.position;
+                        pos.y += 30;
+                        Tiles[0].transform.position = pos;
+
+                        int tileToMove = boardState[foundZ - 3];
+
+                        Vector3 zpos = Tiles[tileToMove].transform.position;
+                        pos.y -= 30;
+                        Tiles[tileToMove].transform.position = pos;
+
+
+                        boardState[foundZ] = boardState[foundZ - 3];
+                        boardState[foundZ - 3] = 0;
+                        break;
+                    }
+
+                case 2:
+                    {
+                        for (int k = 0; k < 9; k++)
+                        {
+                            if (boardState[k] == 0)
+                                foundZ = k;
+                        }
+                        int indexCheck = 0;
+                        indexCheck = foundZ - 1;
+                        if (indexCheck < 0)
+                            break;
+
+                        Vector3 pos = Tiles[0].transform.position;
+                        pos.x += 30;
+                        Tiles[0].transform.position = pos;
+
+                        int tileToMove = boardState[foundZ - 1];
+
+                        Vector3 zpos = Tiles[tileToMove].transform.position;
+                        pos.x -= 30;
+                        Tiles[tileToMove].transform.position = pos;
+
+
+                        boardState[foundZ] = boardState[foundZ - 1];
+                        boardState[foundZ - 1] = 0;
+                        break;
+                    }
+                case 3:
+                    {
+                        for (int k = 0; k < 9; k++)
+                        {
+                            if (boardState[k] == 0)
+                                foundZ = k;
+                        }
+                        int indexCheck = 0;
+                        indexCheck = foundZ + 1;
+                        if (indexCheck > 8)
+                            break;
+
+                        Vector3 pos = Tiles[0].transform.position;
+                        pos.x -= 30;
+                        Tiles[0].transform.position = pos;
+
+                        int tileToMove = boardState[foundZ + 1];
+
+                        Vector3 zpos = Tiles[tileToMove].transform.position;
+                        pos.x += 30;
+                        Tiles[tileToMove].transform.position = pos;
+
+
+                        boardState[foundZ] = boardState[foundZ + 1];
+                        boardState[foundZ + 1] = 0;
+                        break;
+                    }
+            }
+        }
+    }
+
+    public void getHint()
+    {
+        int tileToHint = 0;
+        string directionToHint = "";
+        int[,] CurrentPuzzle = {
+            { boardState[0], boardState[1], boardState[2] },
+            { boardState[3], boardState[4], boardState[5] },
+            { boardState[6], boardState[7], boardState[8] }
+        };
+
+        int findingZero = 0;
+        for (int k = 0; k < 9; k++)
+        {
+            if (boardState[k] == 0)
+                findingZero = k;
+        }
+
+        int x = findingZero / 3;   // row
+        int y = findingZero % 3;   // col
+        Debug.Log("Zero at (row=" + x + ", col=" + y + ")");
+        List<string> hintSolutionPath = solver.SolvePuzzleBFS(CurrentPuzzle, x, y);
+
+        if (hintSolutionPath != null)
+        {
+            Debug.Log("Solution found in " + (hintSolutionPath.Count - 1) + " moves.");
+        }
+
+        string currentString = string.Join(",", hintSolutionPath[0].ToCharArray());
+        string nextString = string.Join(",", hintSolutionPath[1].ToCharArray());
+
+        int[] currentBoard = currentString.Split(',').Select(int.Parse).ToArray();
+        int[] nextBoard = nextString.Split(',').Select(int.Parse).ToArray();
+
+        int cZeroIndex = 0;
+        int nZeroIndex = 0;
+        for (int j = 0; j < 9; j++)
+        {
+            if (currentBoard[j] == 0)
+                cZeroIndex = j;
+        }
+
+        for (int j = 0; j < 9; j++)
+        {
+            if (nextBoard[j] == 0)
+                nZeroIndex = j;
+        }
+
+        if (nZeroIndex + 3 < 9)
+        {
+            if (currentBoard[nZeroIndex + 3] == nextBoard[nZeroIndex])
+            {
+                tileToHint = currentBoard[nZeroIndex];
+                directionToHint = "Down";
+            }
+        }
+
+        if (nZeroIndex - 3 > -1)
+        {
+            if (currentBoard[nZeroIndex - 3] == nextBoard[nZeroIndex])
+            {
+                tileToHint = currentBoard[nZeroIndex];
+                directionToHint = "Up";
+            }
+        }
+
+        if (nZeroIndex - 1 > -1)
+        {
+            if (currentBoard[nZeroIndex - 1] == nextBoard[nZeroIndex])
+            {
+                tileToHint = currentBoard[nZeroIndex];
+                directionToHint = "Left";
+            }
+        }
+
+        if (nZeroIndex + 1 < 9)
+        {
+            if (currentBoard[nZeroIndex + 1] == nextBoard[nZeroIndex])
+            {
+                tileToHint = currentBoard[nZeroIndex];
+                directionToHint = "Right";
+            }
+        }
+
+        hintBox.SetActive(true);
+        string tileText = tileToHint.ToString();
+        hintText.text = "Move " + tileText + " " + directionToHint;
     }
     
 }
