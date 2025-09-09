@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 
 
-public class GameMgr : MonoBehaviour
+public class BossMgr : MonoBehaviour
 {
 
     public int selectedTile = 10;
@@ -33,7 +33,16 @@ public class GameMgr : MonoBehaviour
 
     bool gameDone = false;
     Animator cutinAni;
+
+    public GameObject doorCut;
+    Animator doorOpen;
     bool cutinDone = false;
+
+    public GameObject slash;
+    Animator slashAni;
+    bool slashDone = false;
+
+    bool doorDone = false;
     [HideInInspector]
     public bool monsterDefeated = false;
     bool aniFinish = false;
@@ -50,7 +59,7 @@ public class GameMgr : MonoBehaviour
     bool hintUsed = false;
     bool solveUsed = false;
 
-    public SolvesNHints SaHTracker;
+    public PlayerHealth playerHealth;
 
     // Start is called before the first frame update
     void Start()
@@ -61,17 +70,41 @@ public class GameMgr : MonoBehaviour
         turnsTxt.text = turns.ToString();
         // RandomizePuzzle();
         SetupBoard();
-        SpawnMonster();
         cutinAni = Cutin.GetComponent<Animator>();
+        doorOpen = doorCut.GetComponent<Animator>();
+        slashAni = slash.GetComponent<Animator>();
         Cutin.SetActive(false);
         hintBox.SetActive(false);
         hintUsed = false;
         solveUsed = false;
+        doorCut.SetActive(true);
     }
 
     // Update is called once per frame
     void Update()
     {
+            AnimatorStateInfo aInfo2 = doorOpen.GetCurrentAnimatorStateInfo(0);
+            float NTime2 = aInfo2.normalizedTime;
+
+            if (NTime2 > 1.0f)
+            {
+                doorCut.SetActive(false);
+            }
+
+            AnimatorStateInfo aInfo3 = slashAni.GetCurrentAnimatorStateInfo(0);
+            float NTime3 = aInfo3.normalizedTime;
+
+            if (NTime3 > 1.0f)
+            {
+                slash.SetActive(false);
+                slashDone = true;
+            }
+
+            if (slashDone)
+            {
+                playerHealth.DealDamage(1);
+                slashDone=false;
+            }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -91,7 +124,7 @@ public class GameMgr : MonoBehaviour
                         tileChange.GetComponent<SpriteRenderer>().color = Color.white;
                     }
                     tile.GetComponent<SpriteRenderer>().color = Color.red;
-                    Debug.Log("Hit " + tile.tileNumber);
+                    // Debug.Log("Hit " + tile.tileNumber);
                     selected = true;
                 }
                 if (tile == null || tile.tileNumber == 0)
@@ -149,21 +182,8 @@ public class GameMgr : MonoBehaviour
 
                 if (monsterDefeated == true)
                 {
-                    if(winCounter == winCon - 1)
-                    {
-                        SceneManager.LoadScene(4);
-                    }
-                    RandomizePuzzle();
-                    SetupBoard();
-                    SpawnMonster();
-                    turns = 0;
-                    turnsTxt.text = turns.ToString();
-                    cutinDone = false;
-                    gameDone = false;
-                    monsterDefeated = false;
-                    winCounter += 1;
-                    hintUsed = false;
-                    solveUsed = false;
+
+                    SceneManager.LoadScene(0);
                 }
             }
 
@@ -381,9 +401,14 @@ public class GameMgr : MonoBehaviour
                 }
             }
             currentMove++;
+            // Debug.Log("Reminder: " + (currentMove % 5) );
+            // if (currentMove % 5 == 0)
+            // {
+            //     slash.SetActive(true);
+            // }
 
             string word = boardState.Select(i => i.ToString()).Aggregate((i, j) => i + j);
-            Debug.Log(word);
+            // Debug.Log(word);
 
             solveUsed = true;
 
@@ -394,7 +419,7 @@ public class GameMgr : MonoBehaviour
     void CheckWin()
     {
         string result = string.Join("", boardState);
-        Debug.Log("Result: " + result);
+        // Debug.Log("Result: " + result);
         if (result == goalState && gameDone == false)
         {
             Debug.Log("You WIN!!!");
@@ -404,24 +429,15 @@ public class GameMgr : MonoBehaviour
             if(hintUsed == false && solveUsed == false)
             {
                 mHealth.DealDamage(3);
-                SaHTracker.solves += 1;
-                SaHTracker.hints += 3;
-                SaHTracker.UpdateText();
-
             }
             if(hintUsed == true && solveUsed == false)
             {
                 mHealth.DealDamage(2);
-                SaHTracker.hints += 3;
-                SaHTracker.UpdateText();
             }
             if(solveUsed == true)
             {
                 mHealth.DealDamage(1);
-                SaHTracker.hints += 1;
-                SaHTracker.UpdateText();
-            }
-            
+            }            
             gameDone = true;
         }
     }
@@ -460,7 +476,7 @@ public class GameMgr : MonoBehaviour
                         if (Tiles[j].tileNumber == 0)
                         {
                             Vector3 zpos = Tiles[j].transform.position;
-                            pos.y -= 30;
+                            zpos.y -= 30;
                             Tiles[j].transform.position = pos;
 
                         }
@@ -472,6 +488,8 @@ public class GameMgr : MonoBehaviour
                     boardState[foundIndex] = 0;
                     turns += 1;
                     turnsTxt.text = turns.ToString();
+                     if(turns % 5 == 0)
+                        slash.SetActive(true);
                 }
                 // }
                 break;
@@ -503,7 +521,7 @@ public class GameMgr : MonoBehaviour
                         if (Tiles[j].tileNumber == 0)
                         {
                             Vector3 zpos = Tiles[j].transform.position;
-                            pos.y += 30;
+                            zpos.y += 30;
                             Tiles[j].transform.position = pos;
                         }
 
@@ -514,6 +532,8 @@ public class GameMgr : MonoBehaviour
                     boardState[foundIndex] = 0;
                     turns += 1;
                     turnsTxt.text = turns.ToString();
+                     if(turns % 5 == 0)
+                        slash.SetActive(true);
                 }
                 break;
             case "Right":
@@ -547,7 +567,7 @@ public class GameMgr : MonoBehaviour
                         if (Tiles[j].tileNumber == 0)
                         {
                             Vector3 zpos = Tiles[j].transform.position;
-                            pos.x -= 30;
+                            zpos.x -= 30;
                             Tiles[j].transform.position = pos;
                         }
 
@@ -558,6 +578,8 @@ public class GameMgr : MonoBehaviour
                     boardState[foundIndex] = 0;
                     turns += 1;
                     turnsTxt.text = turns.ToString();
+                     if(turns % 5 == 0)
+                        slash.SetActive(true);
                 }
                 break;
             case "Left":
@@ -591,7 +613,7 @@ public class GameMgr : MonoBehaviour
                         if (Tiles[j].tileNumber == 0)
                         {
                             Vector3 zpos = Tiles[j].transform.position;
-                            pos.x += 30;
+                            zpos.x += 30;
                             Tiles[j].transform.position = pos;
                         }
 
@@ -602,8 +624,11 @@ public class GameMgr : MonoBehaviour
                     boardState[foundIndex] = 0;
                     turns += 1;
                     turnsTxt.text = turns.ToString();
+                    if(turns % 5 == 0)
+                        slash.SetActive(true);
                 }
                 break;
+
         }
     }
 

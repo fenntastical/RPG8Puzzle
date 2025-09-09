@@ -10,6 +10,10 @@ public class Health : MonoBehaviour
     public int health;
     public GameMgr gameMgr;
 
+    public BossMgr BMgr;
+
+    public bool boss;
+
 
     // Start is called before the first frame update
     void Start()
@@ -60,8 +64,17 @@ public class Health : MonoBehaviour
 
         if (newHealth <= 0)
         {
-            gameMgr.monsterDefeated = true;
-            gameObject.SetActive(false);
+            if(!boss)
+            {
+                gameMgr.monsterDefeated = true;
+                gameObject.SetActive(false);
+            }
+            if(boss)
+            {
+                BMgr.monsterDefeated = true;
+                gameObject.SetActive(false);
+            }
+            
         }
         
     }

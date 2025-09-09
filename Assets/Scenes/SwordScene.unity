@@ -1387,6 +1387,8 @@ MonoBehaviour:
   - {fileID: 1030226134}
   health: 1
   gameMgr: {fileID: 1183434314}
+  BMgr: {fileID: 0}
+  boss: 0
 --- !u!1 &891614422
 GameObject:
   m_ObjectHideFlags: 0
@@ -1666,6 +1668,8 @@ MonoBehaviour:
   - {fileID: 1093882759}
   health: 5
   gameMgr: {fileID: 1183434314}
+  BMgr: {fileID: 0}
+  boss: 0
 --- !u!95 &969407826
 Animator:
   serializedVersion: 5
@@ -3044,6 +3048,8 @@ MonoBehaviour:
   currentMonster: {fileID: 0}
   hintBox: {fileID: 422079573}
   hintText: {fileID: 422079574}
+  winCon: 3
+  SaHTracker: {fileID: 1183434315}
 --- !u!114 &1183434315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3061,6 +3067,8 @@ MonoBehaviour:
   solveText: {fileID: 624357712}
   hintText: {fileID: 1829818783}
   gameMgr: {fileID: 1183434314}
+  bossM: {fileID: 0}
+  boss: 0
 --- !u!1 &1189398293
 GameObject:
   m_ObjectHideFlags: 0
@@ -4938,6 +4946,8 @@ MonoBehaviour:
   - {fileID: 1189398293}
   health: 3
   gameMgr: {fileID: 1183434314}
+  BMgr: {fileID: 0}
+  boss: 0
 --- !u!95 &1922889269
 Animator:
   serializedVersion: 5

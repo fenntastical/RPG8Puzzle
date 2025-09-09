@@ -13,6 +13,10 @@ public class SolvesNHints : MonoBehaviour
     public TextMeshProUGUI hintText;
 
     public GameMgr gameMgr;
+
+    public BossMgr bossM;
+
+    public bool boss;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,7 +27,12 @@ public class SolvesNHints : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+    }
 
+    public void UpdateText()
+    {
+        solveText.text = solves.ToString();
+        hintText.text = hints.ToString();
     }
 
     public void SolvePuz()
@@ -32,7 +41,10 @@ public class SolvesNHints : MonoBehaviour
         {
             solves -= 1;
             solveText.text = solves.ToString();
-            gameMgr.SolvePuzzle();
+            if(!boss)
+                gameMgr.SolvePuzzle();
+            if(boss)
+                bossM.SolvePuzzle();
         }
     }
 
@@ -42,7 +54,10 @@ public class SolvesNHints : MonoBehaviour
         {
             hints -= 1;
             hintText.text = hints.ToString();
-            gameMgr.getHint();
+            if(!boss)
+                gameMgr.getHint();
+            if(boss)
+                bossM.getHint();
         }
     }
 }
