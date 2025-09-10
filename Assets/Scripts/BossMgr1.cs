@@ -69,6 +69,8 @@ public class DaggerBossMgr : MonoBehaviour
 
     public SolvesNHintsDagger SnHHolder;
 
+    bool autoSolve = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -76,7 +78,7 @@ public class DaggerBossMgr : MonoBehaviour
         winCounter = 0;
         gameDone = false;
         turnsTxt.text = turns.ToString();
-        // RandomizePuzzle();
+        RandomizePuzzle();
         SetupBoard();
         cutinAni = Cutin.GetComponent<Animator>();
         doorOpen = doorCut.GetComponent<Animator>();
@@ -99,10 +101,13 @@ public class DaggerBossMgr : MonoBehaviour
             turnsTxt.text = string.Format("{0:00}: {1:00}", minutes, seconds);
             AnimatorStateInfo aInfo2 = doorOpen.GetCurrentAnimatorStateInfo(0);
             float NTime2 = aInfo2.normalizedTime;
-            
-            int newseconds = Mathf.FloorToInt(startTime % 60);
-            if (newseconds == 30 || (minutes >0 && newseconds == 0))
-                slash.SetActive(true);
+
+            if (autoSolve == false)
+            {
+                int newseconds = Mathf.FloorToInt(startTime % 60);
+                if (newseconds == 30 || (minutes > 0 && newseconds == 0))
+                    slash.SetActive(true);
+            }
 
         if (NTime2 > 1.0f)
         {
@@ -270,6 +275,7 @@ public class DaggerBossMgr : MonoBehaviour
 
     public void SolvePuzzle()
     {
+        autoSolve = true;
         int[,] CurrentPuzzle = {
             { boardState[0], boardState[1], boardState[2] },
             { boardState[3], boardState[4], boardState[5] },
@@ -455,19 +461,20 @@ public class DaggerBossMgr : MonoBehaviour
             Cutin.SetActive(true);
             // cutinAni = Cutin.GetComponent<Animator>();
             DaggerHealth mHealth = currentMonster.GetComponent<DaggerHealth>();
-            if(hintUsed == false && solveUsed == false)
+            if (hintUsed == false && solveUsed == false)
             {
                 mHealth.DealDamage(3);
             }
-            if(hintUsed == true && solveUsed == false)
+            if (hintUsed == true && solveUsed == false)
             {
                 mHealth.DealDamage(2);
             }
-            if(solveUsed == true)
+            if (solveUsed == true)
             {
                 mHealth.DealDamage(1);
-            }            
+            }
             gameDone = true;
+            autoSolve = false;
         }
     }
     void MoveTile(string direction)

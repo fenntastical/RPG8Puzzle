@@ -73,7 +73,7 @@ public class BossMgr : MonoBehaviour
         winCounter = 0;
         gameDone = false;
         turnsTxt.text = turns.ToString();
-        // RandomizePuzzle();
+        RandomizePuzzle();
         SetupBoard();
         cutinAni = Cutin.GetComponent<Animator>();
         doorOpen = doorCut.GetComponent<Animator>();
