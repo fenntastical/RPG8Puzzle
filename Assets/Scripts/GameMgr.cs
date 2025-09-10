@@ -52,6 +52,12 @@ public class GameMgr : MonoBehaviour
 
     public SolvesNHints SaHTracker;
 
+    bool canPress = true;
+
+    public bool endless = false;
+    
+    public SolvesNHints SnHHolder;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -106,7 +112,7 @@ public class GameMgr : MonoBehaviour
             }
         }
 
-        if (selected)
+        if (selected && canPress == true)
         {
             if (Input.GetKeyDown("w"))
                 MoveTile("Up");
@@ -151,19 +157,28 @@ public class GameMgr : MonoBehaviour
                 {
                     if(winCounter == winCon - 1)
                     {
-                        SceneManager.LoadScene(4);
+                        SnHHolder.UpdateStores();
+                        if (endless)
+                        {
+                            SceneManager.LoadScene(13);
+                        }
+                        else
+                            SceneManager.LoadScene(4);
                     }
-                    RandomizePuzzle();
-                    SetupBoard();
-                    SpawnMonster();
-                    turns = 0;
-                    turnsTxt.text = turns.ToString();
-                    cutinDone = false;
-                    gameDone = false;
-                    monsterDefeated = false;
-                    winCounter += 1;
-                    hintUsed = false;
-                    solveUsed = false;
+                    if (winCounter != winCon - 1)
+                    {
+                        RandomizePuzzle();
+                        SetupBoard();
+                        SpawnMonster();
+                        turns = 0;
+                        turnsTxt.text = turns.ToString();
+                        cutinDone = false;
+                        gameDone = false;
+                        monsterDefeated = false;
+                        winCounter += 1;
+                        hintUsed = false;
+                        solveUsed = false;   
+                    }
                 }
             }
 
@@ -253,7 +268,7 @@ public class GameMgr : MonoBehaviour
             }
 
             AnimateSolve(solutionPath);
-            CheckWin();
+            // CheckWin();
         }
         else
         {
@@ -264,6 +279,11 @@ public class GameMgr : MonoBehaviour
     }
 
     void AnimateSolve(List<string> solution)
+    {
+        StartCoroutine(AnimateSolveCoroutine(solution));   
+    }
+
+    IEnumerator AnimateSolveCoroutine(List<string> solution)
     {
         int currentMove = 0;
         bool moveDone = false;
@@ -306,14 +326,15 @@ public class GameMgr : MonoBehaviour
                     int tileToMove = currentBoard[nZeroIndex];
 
                     Vector3 zpos = Tiles[tileToMove].transform.position;
-                    pos.y -= 30;
+                    zpos.y -= 30;
                     // Tiles[tileToMove].transform.position = pos;
-                    StartCoroutine(LerpPosition(Tiles[tileToMove], pos, .5f));
+                    yield return StartCoroutine(LerpPosition(Tiles[tileToMove], zpos, .5f));
 
 
                     boardState[cZeroIndex] = boardState[nZeroIndex];
                     boardState[nZeroIndex] = 0;
                 }
+
             }
 
             if (nZeroIndex - 3 > -1)
@@ -328,9 +349,9 @@ public class GameMgr : MonoBehaviour
                     int tileToMove = currentBoard[nZeroIndex];
 
                     Vector3 zpos = Tiles[tileToMove].transform.position;
-                    pos.y += 30;
+                    zpos.y += 30;
                     // Tiles[tileToMove].transform.position = pos;
-                    StartCoroutine(LerpPosition(Tiles[tileToMove], pos, .5f));
+                    yield return StartCoroutine(LerpPosition(Tiles[tileToMove], zpos, .5f));
 
 
                     boardState[cZeroIndex] = boardState[nZeroIndex];
@@ -350,9 +371,9 @@ public class GameMgr : MonoBehaviour
                     int tileToMove = currentBoard[nZeroIndex];
 
                     Vector3 zpos = Tiles[tileToMove].transform.position;
-                    pos.x -= 30;
+                    zpos.x -= 30;
                     // Tiles[tileToMove].transform.position = pos;
-                    StartCoroutine(LerpPosition(Tiles[tileToMove], pos, .5f));
+                    yield return StartCoroutine(LerpPosition(Tiles[tileToMove], zpos, .5f));
 
 
                     boardState[cZeroIndex] = boardState[nZeroIndex];
@@ -372,9 +393,9 @@ public class GameMgr : MonoBehaviour
                     int tileToMove = currentBoard[nZeroIndex];
 
                     Vector3 zpos = Tiles[tileToMove].transform.position;
-                    pos.x += 30;
+                    zpos.x += 30;
                     // Tiles[tileToMove].transform.position = pos;
-                    StartCoroutine(LerpPosition(Tiles[tileToMove], pos, .5f));
+                    yield return StartCoroutine(LerpPosition(Tiles[tileToMove], zpos, .5f));
 
                     boardState[cZeroIndex] = boardState[nZeroIndex];
                     boardState[nZeroIndex] = 0;
@@ -386,11 +407,12 @@ public class GameMgr : MonoBehaviour
             Debug.Log(word);
 
             solveUsed = true;
+            CheckWin();
 
 
         }
+        // yield return;
     }
-
     void CheckWin()
     {
         string result = string.Join("", boardState);
@@ -460,8 +482,8 @@ public class GameMgr : MonoBehaviour
                         if (Tiles[j].tileNumber == 0)
                         {
                             Vector3 zpos = Tiles[j].transform.position;
-                            pos.y -= 30;
-                            Tiles[j].transform.position = pos;
+                            zpos.y -= 30;
+                            Tiles[j].transform.position = zpos;
 
                         }
 
@@ -503,8 +525,8 @@ public class GameMgr : MonoBehaviour
                         if (Tiles[j].tileNumber == 0)
                         {
                             Vector3 zpos = Tiles[j].transform.position;
-                            pos.y += 30;
-                            Tiles[j].transform.position = pos;
+                            zpos.y += 30;
+                            Tiles[j].transform.position = zpos;
                         }
 
                     }
@@ -547,8 +569,8 @@ public class GameMgr : MonoBehaviour
                         if (Tiles[j].tileNumber == 0)
                         {
                             Vector3 zpos = Tiles[j].transform.position;
-                            pos.x -= 30;
-                            Tiles[j].transform.position = pos;
+                            zpos.x -= 30;
+                            Tiles[j].transform.position = zpos;
                         }
 
                     }
@@ -591,8 +613,8 @@ public class GameMgr : MonoBehaviour
                         if (Tiles[j].tileNumber == 0)
                         {
                             Vector3 zpos = Tiles[j].transform.position;
-                            pos.x += 30;
-                            Tiles[j].transform.position = pos;
+                            zpos.x += 30;
+                            Tiles[j].transform.position = zpos;
                         }
 
                     }
@@ -610,6 +632,7 @@ public class GameMgr : MonoBehaviour
 
     IEnumerator LerpPosition(TileMgr tile, Vector3 targetPosition, float duration)
     {
+        canPress = false;
         float time = 0;
         Vector3 startPosition = tile.transform.position;
 
@@ -618,6 +641,10 @@ public class GameMgr : MonoBehaviour
             tile.transform.position = Vector3.Lerp(startPosition, targetPosition, time / duration);
             time += Time.deltaTime;
             yield return null;
+        }
+        if (time >= duration)
+        {
+            canPress = true;
         }
         tile.transform.position = targetPosition;
     }
@@ -645,15 +672,15 @@ public class GameMgr : MonoBehaviour
                         if (indexCheck > 8)
                         { break; }
 
-                        Vector3 pos = Tiles[0].transform.position;
-                        pos.y -= 30;
-                        Tiles[0].transform.position = pos;
+                        // Vector3 pos = Tiles[0].transform.position;
+                        // pos.y -= 30;
+                        // Tiles[0].transform.position = pos;
 
-                        int tileToMove = boardState[foundZ + 3];
+                        // int tileToMove = boardState[foundZ + 3];
 
-                        Vector3 zpos = Tiles[tileToMove].transform.position;
-                        pos.y += 30;
-                        Tiles[tileToMove].transform.position = pos;
+                        // Vector3 zpos = Tiles[tileToMove].transform.position;
+                        // zpos.y += 30;
+                        // Tiles[tileToMove].transform.position = zpos;
 
 
                         boardState[foundZ] = boardState[foundZ + 3];
@@ -674,15 +701,15 @@ public class GameMgr : MonoBehaviour
                         if (indexCheck < 0)
                             break;
 
-                        Vector3 pos = Tiles[0].transform.position;
-                        pos.y += 30;
-                        Tiles[0].transform.position = pos;
+                        // Vector3 pos = Tiles[0].transform.position;
+                        // pos.y += 30;
+                        // Tiles[0].transform.position = pos;
 
-                        int tileToMove = boardState[foundZ - 3];
+                        // int tileToMove = boardState[foundZ - 3];
 
-                        Vector3 zpos = Tiles[tileToMove].transform.position;
-                        pos.y -= 30;
-                        Tiles[tileToMove].transform.position = pos;
+                        // Vector3 zpos = Tiles[tileToMove].transform.position;
+                        // zpos.y -= 30;
+                        // Tiles[tileToMove].transform.position = zpos;
 
 
                         boardState[foundZ] = boardState[foundZ - 3];
@@ -702,15 +729,15 @@ public class GameMgr : MonoBehaviour
                         if (indexCheck < 0)
                             break;
 
-                        Vector3 pos = Tiles[0].transform.position;
-                        pos.x += 30;
-                        Tiles[0].transform.position = pos;
+                        // Vector3 pos = Tiles[0].transform.position;
+                        // pos.x += 30;
+                        // Tiles[0].transform.position = pos;
 
-                        int tileToMove = boardState[foundZ - 1];
+                        // int tileToMove = boardState[foundZ - 1];
 
-                        Vector3 zpos = Tiles[tileToMove].transform.position;
-                        pos.x -= 30;
-                        Tiles[tileToMove].transform.position = pos;
+                        // Vector3 zpos = Tiles[tileToMove].transform.position;
+                        // zpos.x -= 30;
+                        // Tiles[tileToMove].transform.position = zpos;
 
 
                         boardState[foundZ] = boardState[foundZ - 1];
@@ -729,15 +756,15 @@ public class GameMgr : MonoBehaviour
                         if (indexCheck > 8)
                             break;
 
-                        Vector3 pos = Tiles[0].transform.position;
-                        pos.x -= 30;
-                        Tiles[0].transform.position = pos;
+                        // Vector3 pos = Tiles[0].transform.position;
+                        // pos.x -= 30;
+                        // Tiles[0].transform.position = pos;
 
-                        int tileToMove = boardState[foundZ + 1];
+                        // int tileToMove = boardState[foundZ + 1];
 
-                        Vector3 zpos = Tiles[tileToMove].transform.position;
-                        pos.x += 30;
-                        Tiles[tileToMove].transform.position = pos;
+                        // Vector3 zpos = Tiles[tileToMove].transform.position;
+                        // zpos.x += 30;
+                        // Tiles[tileToMove].transform.position = zpos;
 
 
                         boardState[foundZ] = boardState[foundZ + 1];

@@ -20,4 +20,34 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SwordBoss.unity
     guid: 1421e733192f65642b719ae14a1d259c
+  - enabled: 1
+    path: Assets/Scenes/WinScreen.unity
+    guid: eef8313b2334aa540af2c84e33d73b23
+  - enabled: 1
+    path: Assets/Scenes/DefeatScreenSword.unity
+    guid: 8c43e6a790b552a458253298b9a6641d
+  - enabled: 1
+    path: Assets/Scenes/DaggerScene.unity
+    guid: 0d8c4733c137a1b45bb8ae1b414ea5e1
+  - enabled: 1
+    path: Assets/Scenes/DefeatScreenDagger.unity
+    guid: 1d8375a6b99adfc42bc2a4b4e4d951b8
+  - enabled: 1
+    path: Assets/Scenes/DaggerBoss.unity
+    guid: 6eaf392b3d671734fb286de99fbbf384
+  - enabled: 1
+    path: Assets/Scenes/DaggerTutorial.unity
+    guid: 7a5a6402cbaab0b4a916b246ba06af56
+  - enabled: 1
+    path: Assets/Scenes/Endless/DaggerSceneEndless.unity
+    guid: f6435a0c29b2cbb41bfd604a1d543b5c
+  - enabled: 1
+    path: Assets/Scenes/Endless/DaggerBossEndless.unity
+    guid: bf7dab00574f8ca4a9724986eaa5600e
+  - enabled: 1
+    path: Assets/Scenes/Endless/SwordBossEndless.unity
+    guid: b562e6673c78a014e9686935f52d2287
+  - enabled: 1
+    path: Assets/Scenes/Endless/SwordSceneEndless.unity
+    guid: 7958d6106b5c22445a28297f5dec40ec
   m_configObjects: {}

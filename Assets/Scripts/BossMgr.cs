@@ -60,6 +60,11 @@ public class BossMgr : MonoBehaviour
     bool solveUsed = false;
 
     public PlayerHealth playerHealth;
+    bool canPress = true;
+
+    public bool endless = false;
+
+    public SolvesNHints SnHHolder;
 
     // Start is called before the first frame update
     void Start()
@@ -139,7 +144,7 @@ public class BossMgr : MonoBehaviour
             }
         }
 
-        if (selected)
+        if (selected && canPress == true)
         {
             if (Input.GetKeyDown("w"))
                 MoveTile("Up");
@@ -182,8 +187,13 @@ public class BossMgr : MonoBehaviour
 
                 if (monsterDefeated == true)
                 {
-
-                    SceneManager.LoadScene(0);
+                    SnHHolder.UpdateStores();
+                    if (endless)
+                    {
+                        SceneManager.LoadScene(14);
+                    }
+                    else
+                        SceneManager.LoadScene(5);
                 }
             }
 
@@ -273,7 +283,7 @@ public class BossMgr : MonoBehaviour
             }
 
             AnimateSolve(solutionPath);
-            CheckWin();
+            // CheckWin();
         }
         else
         {
@@ -284,6 +294,11 @@ public class BossMgr : MonoBehaviour
     }
 
     void AnimateSolve(List<string> solution)
+    {
+        StartCoroutine(AnimateSolveCoroutine(solution));   
+    }
+
+    IEnumerator AnimateSolveCoroutine(List<string> solution)
     {
         int currentMove = 0;
         bool moveDone = false;
@@ -326,14 +341,15 @@ public class BossMgr : MonoBehaviour
                     int tileToMove = currentBoard[nZeroIndex];
 
                     Vector3 zpos = Tiles[tileToMove].transform.position;
-                    pos.y -= 30;
+                    zpos.y -= 30;
                     // Tiles[tileToMove].transform.position = pos;
-                    StartCoroutine(LerpPosition(Tiles[tileToMove], pos, .5f));
+                    yield return StartCoroutine(LerpPosition(Tiles[tileToMove], zpos, .5f));
 
 
                     boardState[cZeroIndex] = boardState[nZeroIndex];
                     boardState[nZeroIndex] = 0;
                 }
+
             }
 
             if (nZeroIndex - 3 > -1)
@@ -348,9 +364,9 @@ public class BossMgr : MonoBehaviour
                     int tileToMove = currentBoard[nZeroIndex];
 
                     Vector3 zpos = Tiles[tileToMove].transform.position;
-                    pos.y += 30;
+                    zpos.y += 30;
                     // Tiles[tileToMove].transform.position = pos;
-                    StartCoroutine(LerpPosition(Tiles[tileToMove], pos, .5f));
+                    yield return StartCoroutine(LerpPosition(Tiles[tileToMove], zpos, .5f));
 
 
                     boardState[cZeroIndex] = boardState[nZeroIndex];
@@ -370,9 +386,9 @@ public class BossMgr : MonoBehaviour
                     int tileToMove = currentBoard[nZeroIndex];
 
                     Vector3 zpos = Tiles[tileToMove].transform.position;
-                    pos.x -= 30;
+                    zpos.x -= 30;
                     // Tiles[tileToMove].transform.position = pos;
-                    StartCoroutine(LerpPosition(Tiles[tileToMove], pos, .5f));
+                    yield return StartCoroutine(LerpPosition(Tiles[tileToMove], zpos, .5f));
 
 
                     boardState[cZeroIndex] = boardState[nZeroIndex];
@@ -392,28 +408,25 @@ public class BossMgr : MonoBehaviour
                     int tileToMove = currentBoard[nZeroIndex];
 
                     Vector3 zpos = Tiles[tileToMove].transform.position;
-                    pos.x += 30;
+                    zpos.x += 30;
                     // Tiles[tileToMove].transform.position = pos;
-                    StartCoroutine(LerpPosition(Tiles[tileToMove], pos, .5f));
+                    yield return StartCoroutine(LerpPosition(Tiles[tileToMove], zpos, .5f));
 
                     boardState[cZeroIndex] = boardState[nZeroIndex];
                     boardState[nZeroIndex] = 0;
                 }
             }
             currentMove++;
-            // Debug.Log("Reminder: " + (currentMove % 5) );
-            // if (currentMove % 5 == 0)
-            // {
-            //     slash.SetActive(true);
-            // }
 
             string word = boardState.Select(i => i.ToString()).Aggregate((i, j) => i + j);
-            // Debug.Log(word);
+            Debug.Log(word);
 
             solveUsed = true;
+            CheckWin();
 
 
         }
+        // yield return;
     }
 
     void CheckWin()
@@ -477,7 +490,7 @@ public class BossMgr : MonoBehaviour
                         {
                             Vector3 zpos = Tiles[j].transform.position;
                             zpos.y -= 30;
-                            Tiles[j].transform.position = pos;
+                            Tiles[j].transform.position = zpos;
 
                         }
 
@@ -488,7 +501,7 @@ public class BossMgr : MonoBehaviour
                     boardState[foundIndex] = 0;
                     turns += 1;
                     turnsTxt.text = turns.ToString();
-                     if(turns % 5 == 0)
+                     if(turns % 10 == 0)
                         slash.SetActive(true);
                 }
                 // }
@@ -522,7 +535,7 @@ public class BossMgr : MonoBehaviour
                         {
                             Vector3 zpos = Tiles[j].transform.position;
                             zpos.y += 30;
-                            Tiles[j].transform.position = pos;
+                            Tiles[j].transform.position = zpos;
                         }
 
                     }
@@ -532,7 +545,7 @@ public class BossMgr : MonoBehaviour
                     boardState[foundIndex] = 0;
                     turns += 1;
                     turnsTxt.text = turns.ToString();
-                     if(turns % 5 == 0)
+                     if(turns % 10 == 0)
                         slash.SetActive(true);
                 }
                 break;
@@ -568,7 +581,7 @@ public class BossMgr : MonoBehaviour
                         {
                             Vector3 zpos = Tiles[j].transform.position;
                             zpos.x -= 30;
-                            Tiles[j].transform.position = pos;
+                            Tiles[j].transform.position = zpos;
                         }
 
                     }
@@ -578,7 +591,7 @@ public class BossMgr : MonoBehaviour
                     boardState[foundIndex] = 0;
                     turns += 1;
                     turnsTxt.text = turns.ToString();
-                     if(turns % 5 == 0)
+                     if(turns % 10 == 0)
                         slash.SetActive(true);
                 }
                 break;
@@ -614,7 +627,7 @@ public class BossMgr : MonoBehaviour
                         {
                             Vector3 zpos = Tiles[j].transform.position;
                             zpos.x += 30;
-                            Tiles[j].transform.position = pos;
+                            Tiles[j].transform.position = zpos;
                         }
 
                     }
@@ -624,7 +637,7 @@ public class BossMgr : MonoBehaviour
                     boardState[foundIndex] = 0;
                     turns += 1;
                     turnsTxt.text = turns.ToString();
-                    if(turns % 5 == 0)
+                    if(turns % 10 == 0)
                         slash.SetActive(true);
                 }
                 break;
@@ -635,6 +648,7 @@ public class BossMgr : MonoBehaviour
 
     IEnumerator LerpPosition(TileMgr tile, Vector3 targetPosition, float duration)
     {
+        canPress = false;
         float time = 0;
         Vector3 startPosition = tile.transform.position;
 
@@ -643,6 +657,10 @@ public class BossMgr : MonoBehaviour
             tile.transform.position = Vector3.Lerp(startPosition, targetPosition, time / duration);
             time += Time.deltaTime;
             yield return null;
+        }
+        if (time >= duration)
+        {
+            canPress = true;
         }
         tile.transform.position = targetPosition;
     }
@@ -677,8 +695,8 @@ public class BossMgr : MonoBehaviour
                         int tileToMove = boardState[foundZ + 3];
 
                         Vector3 zpos = Tiles[tileToMove].transform.position;
-                        pos.y += 30;
-                        Tiles[tileToMove].transform.position = pos;
+                        zpos.y += 30;
+                        Tiles[tileToMove].transform.position = zpos;
 
 
                         boardState[foundZ] = boardState[foundZ + 3];
@@ -706,8 +724,8 @@ public class BossMgr : MonoBehaviour
                         int tileToMove = boardState[foundZ - 3];
 
                         Vector3 zpos = Tiles[tileToMove].transform.position;
-                        pos.y -= 30;
-                        Tiles[tileToMove].transform.position = pos;
+                        zpos.y -= 30;
+                        Tiles[tileToMove].transform.position = zpos;
 
 
                         boardState[foundZ] = boardState[foundZ - 3];
@@ -734,8 +752,8 @@ public class BossMgr : MonoBehaviour
                         int tileToMove = boardState[foundZ - 1];
 
                         Vector3 zpos = Tiles[tileToMove].transform.position;
-                        pos.x -= 30;
-                        Tiles[tileToMove].transform.position = pos;
+                        zpos.x -= 30;
+                        Tiles[tileToMove].transform.position = zpos;
 
 
                         boardState[foundZ] = boardState[foundZ - 1];
@@ -761,8 +779,8 @@ public class BossMgr : MonoBehaviour
                         int tileToMove = boardState[foundZ + 1];
 
                         Vector3 zpos = Tiles[tileToMove].transform.position;
-                        pos.x += 30;
-                        Tiles[tileToMove].transform.position = pos;
+                        zpos.x += 30;
+                        Tiles[tileToMove].transform.position = zpos;
 
 
                         boardState[foundZ] = boardState[foundZ + 1];

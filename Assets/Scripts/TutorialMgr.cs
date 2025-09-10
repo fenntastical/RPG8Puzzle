@@ -41,6 +41,7 @@ public class TutorialMgr : MonoBehaviour
     public bool firstDialogue = false;
 
     public Dialogue dialogue;
+    bool inprogressStart = false;
 
     // Start is called before the first frame update
     void Start()
@@ -52,13 +53,15 @@ public class TutorialMgr : MonoBehaviour
         SetupBoard();
         cutinAni = Cutin.GetComponent<Animator>();
         Cutin.SetActive(false);
-        dialogue.StartDialogue();
+        // dialogue.StartDialogue();
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if (inprogressStart == false)
+            dialogue.StartDialogue();
+        inprogressStart = true;
         if (Input.GetMouseButtonDown(0) && firstDialogue == true)
         {
             Vector3 mousePos = Input.mousePosition;

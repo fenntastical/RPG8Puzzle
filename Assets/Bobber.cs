@@ -11,6 +11,10 @@ public class Bobber : MonoBehaviour
     public float floatStrength = 1; // You can change this in the Unity Editor to 
                                     // change the range of y positions that are possible.
 
+    public SceneMgr sceneMgr;
+
+    public int sceneNumChange;
+
 
     public string pathDescription;
 
@@ -37,5 +41,10 @@ public class Bobber : MonoBehaviour
         // Vector3 pos = textbox.transform.position;
         //             pos.y = 0;
         //             textbox.transform.position = pos;
+    }
+
+    public void ChangeSceneNum()
+    {
+        sceneMgr.SceneToLoad = sceneNumChange;
     }
 }

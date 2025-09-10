@@ -17,11 +17,36 @@ public class SolvesNHints : MonoBehaviour
     public BossMgr bossM;
 
     public bool boss;
+    public GameObject dataLoad;
+    HintnSolveTracker hintLoader;
     // Start is called before the first frame update
     void Start()
     {
-        solveText.text = solves.ToString();
-        hintText.text = hints.ToString();
+        dataLoad = GameObject.Find("Stored");
+
+
+        if (dataLoad != null)
+        {
+            hintLoader = dataLoad.GetComponent<HintnSolveTracker>();
+            if (hintLoader != null)
+            {
+                Debug.Log(hintLoader.baseSolves);
+                Debug.Log(hintLoader.baseHints);
+
+                solves = hintLoader.baseSolves;
+                hints = hintLoader.baseHints;
+                solveText.text = solves.ToString();
+                hintText.text = hints.ToString();
+            }
+            else
+            {
+                Debug.LogError("HintnSolveTracker not found on Stored object!");
+            }
+        }
+        else
+        {
+            Debug.LogError("Stored object not found!");
+        }
     }
 
     // Update is called once per frame
@@ -41,9 +66,9 @@ public class SolvesNHints : MonoBehaviour
         {
             solves -= 1;
             solveText.text = solves.ToString();
-            if(!boss)
+            if (!boss)
                 gameMgr.SolvePuzzle();
-            if(boss)
+            if (boss)
                 bossM.SolvePuzzle();
         }
     }
@@ -54,10 +79,16 @@ public class SolvesNHints : MonoBehaviour
         {
             hints -= 1;
             hintText.text = hints.ToString();
-            if(!boss)
+            if (!boss)
                 gameMgr.getHint();
-            if(boss)
+            if (boss)
                 bossM.getHint();
         }
+    }
+    
+    public void UpdateStores()
+    {
+        hintLoader.baseSolves = solves;
+        hintLoader.baseHints = hints;
     }
 }

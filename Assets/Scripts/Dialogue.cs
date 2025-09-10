@@ -21,6 +21,8 @@ public class Dialogue : MonoBehaviour
     public bool dialogue2 = false;
     public bool d1 = true;
 
+    public int scenetoSwitch;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -139,7 +141,7 @@ public class Dialogue : MonoBehaviour
             // tutorialMgr.firstDialogue = true;
             textbox.isVisible = false;
             inprogress = false;
-            SceneManager.LoadScene(3);
+            SceneManager.LoadScene(scenetoSwitch);
             // tutorialMgr.firstDialogue = true;
             // GameEventsManager.instance.playerEvents.EnablePlayerMovement();
         }

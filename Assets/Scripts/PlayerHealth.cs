@@ -8,9 +8,10 @@ public class PlayerHealth : MonoBehaviour
 
     public List<GameObject> healthList;
     public int health;
-    public BossMgr BMgr;
+    // public BossMgr BMgr;
+    // public DaggerBossMgr dBMgr;
 
-    public bool boss;
+    public bool dagger;
     // Start is called before the first frame update
     void Start()
     {
@@ -38,7 +39,11 @@ public class PlayerHealth : MonoBehaviour
         if (newHealth <= 0)
         {
 
-            SceneManager.LoadScene(1);
+            if (dagger == false)
+                SceneManager.LoadScene(6);
+
+            if (dagger)
+                SceneManager.LoadScene(8);
 
             
         }
