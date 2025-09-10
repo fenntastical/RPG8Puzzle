@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//
+// Author: Fenn Edmonds
+// Purpose: Controls the tiles
+//
+
 public class TileMgr : MonoBehaviour
 {
 
@@ -14,7 +19,7 @@ public class TileMgr : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame

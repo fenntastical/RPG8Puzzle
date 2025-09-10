@@ -2,9 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+//
+// Author: Fenn Edmonds
+// Purpose: Controls the winscreen and actually also used for defeat screens
+//
+
 public class WinScreen : MonoBehaviour
 {
-     Animator ani;
+    Animator ani;
     public GameObject animation;
     bool cutinDone = false;
 
@@ -22,7 +28,7 @@ public class WinScreen : MonoBehaviour
     void Update()
     {
         AnimatorStateInfo aInfo = ani.GetCurrentAnimatorStateInfo(0);
-            float NTime = aInfo.normalizedTime;
+        float NTime = aInfo.normalizedTime;
 
         if (NTime > 1.0f)
         {

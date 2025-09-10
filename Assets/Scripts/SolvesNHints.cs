@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+//
+// Author: Fenn Edmonds
+// Purpose: Controls the solves and hints for the sword path
+//
+
 public class SolvesNHints : MonoBehaviour
 {
 
@@ -85,7 +90,7 @@ public class SolvesNHints : MonoBehaviour
                 bossM.getHint();
         }
     }
-    
+
     public void UpdateStores()
     {
         hintLoader.baseSolves = solves;

@@ -5,7 +5,12 @@ using UnityEngine.Tilemaps;
 using System.Linq;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
+//
+// Author: Fenn Edmonds
+// Purpose: Controls the DaggerBoss
+//
 
 public class DaggerBossMgr : MonoBehaviour
 {
@@ -64,12 +69,15 @@ public class DaggerBossMgr : MonoBehaviour
     public float startTime;
 
     bool canPress = true;
-    
+
     public bool endless = false;
 
     public SolvesNHintsDagger SnHHolder;
 
     bool autoSolve = false;
+
+    public Button solveB;
+    public Button hintB;
 
     // Start is called before the first frame update
     void Start()
@@ -79,6 +87,9 @@ public class DaggerBossMgr : MonoBehaviour
         gameDone = false;
         turnsTxt.text = turns.ToString();
         RandomizePuzzle();
+        string result = string.Join("", boardState);
+        if (result == goalState)
+        { RandomizePuzzle(); }
         SetupBoard();
         cutinAni = Cutin.GetComponent<Animator>();
         doorOpen = doorCut.GetComponent<Animator>();
@@ -95,19 +106,19 @@ public class DaggerBossMgr : MonoBehaviour
     void Update()
     {
 
-            startTime += Time.deltaTime;
-            int minutes = Mathf.FloorToInt(startTime / 60);
-            int seconds = Mathf.FloorToInt(startTime % 60);
-            turnsTxt.text = string.Format("{0:00}: {1:00}", minutes, seconds);
-            AnimatorStateInfo aInfo2 = doorOpen.GetCurrentAnimatorStateInfo(0);
-            float NTime2 = aInfo2.normalizedTime;
+        startTime += Time.deltaTime;
+        int minutes = Mathf.FloorToInt(startTime / 60);
+        int seconds = Mathf.FloorToInt(startTime % 60);
+        turnsTxt.text = string.Format("{0:00}: {1:00}", minutes, seconds);
+        AnimatorStateInfo aInfo2 = doorOpen.GetCurrentAnimatorStateInfo(0);
+        float NTime2 = aInfo2.normalizedTime;
 
-            if (autoSolve == false)
-            {
-                int newseconds = Mathf.FloorToInt(startTime % 60);
-                if (newseconds == 30 || (minutes > 0 && newseconds == 0))
-                    slash.SetActive(true);
-            }
+        if (autoSolve == false)
+        {
+            int newseconds = Mathf.FloorToInt(startTime % 60);
+            if (newseconds == 30 || (minutes > 0 && newseconds == 0))
+                slash.SetActive(true);
+        }
 
         if (NTime2 > 1.0f)
         {
@@ -115,20 +126,20 @@ public class DaggerBossMgr : MonoBehaviour
             startTime = 0;
         }
 
-            AnimatorStateInfo aInfo3 = slashAni.GetCurrentAnimatorStateInfo(0);
-            float NTime3 = aInfo3.normalizedTime;
+        AnimatorStateInfo aInfo3 = slashAni.GetCurrentAnimatorStateInfo(0);
+        float NTime3 = aInfo3.normalizedTime;
 
-            if (NTime3 > 1.0f)
-            {
-                slash.SetActive(false);
-                slashDone = true;
-            }
+        if (NTime3 > 1.0f)
+        {
+            slash.SetActive(false);
+            slashDone = true;
+        }
 
-            if (slashDone)
-            {
-                playerHealth.DealDamage(1);
-                slashDone=false;
-            }
+        if (slashDone)
+        {
+            playerHealth.DealDamage(1);
+            slashDone = false;
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -195,6 +206,9 @@ public class DaggerBossMgr : MonoBehaviour
                 if (monsterDefeated == false)
                 {
                     RandomizePuzzle();
+                    string result = string.Join("", boardState);
+                    if (result == goalState)
+                    { RandomizePuzzle(); }
                     SetupBoard();
                     turns = 0;
                     // turnsTxt.text = turns.ToString();
@@ -208,7 +222,7 @@ public class DaggerBossMgr : MonoBehaviour
                 if (monsterDefeated == true)
                 {
                     SnHHolder.UpdateStores();
-                    
+
                     if (endless)
                     {
                         SceneManager.LoadScene(11);
@@ -265,10 +279,10 @@ public class DaggerBossMgr : MonoBehaviour
             case 1:
                 currentMonster = Instantiate(monsterList[1], new Vector3(106.2f, -3.1f, 0), transform.rotation);
                 break;
-            
+
             case 2:
                 currentMonster = Instantiate(monsterList[2], new Vector3(106.2f, -8.7f, 0), transform.rotation);
-            break;
+                break;
         }
         // currentMonster = Instantiate(monsterList[randomM], new Vector3(106.2f, -35f, 0), transform.rotation);
     }
@@ -276,6 +290,8 @@ public class DaggerBossMgr : MonoBehaviour
     public void SolvePuzzle()
     {
         autoSolve = true;
+        solveB.enabled = false;
+        hintB.enabled = false;
         int[,] CurrentPuzzle = {
             { boardState[0], boardState[1], boardState[2] },
             { boardState[3], boardState[4], boardState[5] },
@@ -317,7 +333,7 @@ public class DaggerBossMgr : MonoBehaviour
 
     void AnimateSolve(List<string> solution)
     {
-        StartCoroutine(AnimateSolveCoroutine(solution));   
+        StartCoroutine(AnimateSolveCoroutine(solution));
     }
 
     IEnumerator AnimateSolveCoroutine(List<string> solution)
@@ -475,6 +491,8 @@ public class DaggerBossMgr : MonoBehaviour
             }
             gameDone = true;
             autoSolve = false;
+            solveB.enabled = true;
+            hintB.enabled = true;
         }
     }
     void MoveTile(string direction)
@@ -890,5 +908,5 @@ public class DaggerBossMgr : MonoBehaviour
         hintUsed = true;
     }
 
-    
+
 }

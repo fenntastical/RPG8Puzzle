@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+//
+// Author: Fenn Edmonds
+// Purpose: Controls the ui at some points
+//
+
 public class UIMgr : MonoBehaviour
 {
 
@@ -12,7 +17,7 @@ public class UIMgr : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame

@@ -1,7 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.U2D.Animation;
+// using UnityEditor.U2D.Animation;
 using UnityEngine;
+
+//
+// Author: Reference from Geeks4Geeks
+// Purpose: Solves the 8 puzzle with bfs
+//
 
 public class PuzzleSolver : MonoBehaviour
 {
@@ -33,7 +38,7 @@ public class PuzzleSolver : MonoBehaviour
     // Called when the scene starts
     void Start()
     {
-        
+
     }
 
     // Convert 2D board to string representation
@@ -138,6 +143,6 @@ public class PuzzleSolver : MonoBehaviour
 
     void PuzzleRandomizer()
     {
-        
+
     }
 }

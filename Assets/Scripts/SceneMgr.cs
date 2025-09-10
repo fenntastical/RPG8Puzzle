@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+//
+// Author: Fenn Edmonds
+// Purpose: Controls the scene switching mostly on buttons
+//
+
 public class SceneMgr : MonoBehaviour
 {
     public int SceneToLoad;

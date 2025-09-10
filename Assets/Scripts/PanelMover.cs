@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//
+// Author: Fenn Edmonds
+// Purpose: Moves panels around
+//
+
 public class PanelMover : MonoBehaviour
 {
 
@@ -22,11 +27,14 @@ public class PanelMover : MonoBehaviour
         set
         {
             _isVisible = value;
-            if(_isVisible) {
+            if (_isVisible)
+            {
                 panel.anchoredPosition = visiblePosition;
-                if(isTimed)
+                if (isTimed)
                     StartCoroutine(HideAfterTime(showDuration));
-            } else {
+            }
+            else
+            {
                 panel.anchoredPosition = holdingPosition;
             }
         }
@@ -78,13 +86,13 @@ public class PanelMover : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void StopTime()

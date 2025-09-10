@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+//
+// Author: Fenn Edmonds
+// Purpose: Controls player health
+//
+
 public class PlayerHealth : MonoBehaviour
 {
 
@@ -15,13 +20,13 @@ public class PlayerHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void DealDamage(int damage)
@@ -31,7 +36,7 @@ public class PlayerHealth : MonoBehaviour
         {
             while (health != newHealth)
             {
-                healthList[health-1].SetActive(false);
+                healthList[health - 1].SetActive(false);
                 health -= 1;
             }
         }
@@ -45,8 +50,8 @@ public class PlayerHealth : MonoBehaviour
             if (dagger)
                 SceneManager.LoadScene(8);
 
-            
+
         }
-        
+
     }
 }

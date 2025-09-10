@@ -3,6 +3,11 @@ using System;
 using System.Collections;
 using TMPro;
 
+//
+// Author: Fenn Edmonds
+// Purpose: Makes the UI float
+//
+
 public class Float : MonoBehaviour
 {
 

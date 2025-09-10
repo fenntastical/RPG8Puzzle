@@ -5,6 +5,12 @@ using UnityEngine.Tilemaps;
 using System.Linq;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+//
+// Author: Fenn Edmonds
+// Purpose: Controls the SwordBoss
+//
 
 
 public class BossMgr : MonoBehaviour
@@ -65,6 +71,8 @@ public class BossMgr : MonoBehaviour
     public bool endless = false;
 
     public SolvesNHints SnHHolder;
+     public Button solveB;
+    public Button hintB;
 
     // Start is called before the first frame update
     void Start()
@@ -74,6 +82,9 @@ public class BossMgr : MonoBehaviour
         gameDone = false;
         turnsTxt.text = turns.ToString();
         RandomizePuzzle();
+        string result = string.Join("", boardState);
+        if (result == goalState)
+        { RandomizePuzzle(); }
         SetupBoard();
         cutinAni = Cutin.GetComponent<Animator>();
         doorOpen = doorCut.GetComponent<Animator>();
@@ -88,28 +99,28 @@ public class BossMgr : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-            AnimatorStateInfo aInfo2 = doorOpen.GetCurrentAnimatorStateInfo(0);
-            float NTime2 = aInfo2.normalizedTime;
+        AnimatorStateInfo aInfo2 = doorOpen.GetCurrentAnimatorStateInfo(0);
+        float NTime2 = aInfo2.normalizedTime;
 
-            if (NTime2 > 1.0f)
-            {
-                doorCut.SetActive(false);
-            }
+        if (NTime2 > 1.0f)
+        {
+            doorCut.SetActive(false);
+        }
 
-            AnimatorStateInfo aInfo3 = slashAni.GetCurrentAnimatorStateInfo(0);
-            float NTime3 = aInfo3.normalizedTime;
+        AnimatorStateInfo aInfo3 = slashAni.GetCurrentAnimatorStateInfo(0);
+        float NTime3 = aInfo3.normalizedTime;
 
-            if (NTime3 > 1.0f)
-            {
-                slash.SetActive(false);
-                slashDone = true;
-            }
+        if (NTime3 > 1.0f)
+        {
+            slash.SetActive(false);
+            slashDone = true;
+        }
 
-            if (slashDone)
-            {
-                playerHealth.DealDamage(1);
-                slashDone=false;
-            }
+        if (slashDone)
+        {
+            playerHealth.DealDamage(1);
+            slashDone = false;
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -176,6 +187,9 @@ public class BossMgr : MonoBehaviour
                 if (monsterDefeated == false)
                 {
                     RandomizePuzzle();
+                    string result = string.Join("", boardState);
+                    if (result == goalState)
+                    { RandomizePuzzle(); }
                     SetupBoard();
                     turns = 0;
                     turnsTxt.text = turns.ToString();
@@ -244,10 +258,10 @@ public class BossMgr : MonoBehaviour
             case 1:
                 currentMonster = Instantiate(monsterList[1], new Vector3(106.2f, -3.1f, 0), transform.rotation);
                 break;
-            
+
             case 2:
                 currentMonster = Instantiate(monsterList[2], new Vector3(106.2f, -8.7f, 0), transform.rotation);
-            break;
+                break;
         }
         // currentMonster = Instantiate(monsterList[randomM], new Vector3(106.2f, -35f, 0), transform.rotation);
     }
@@ -278,28 +292,25 @@ public class BossMgr : MonoBehaviour
             foreach (string state in solutionPath)
             {
                 Debug.Log(state);
-                // string formatted = string.Join(",", state.ToCharArray());
-                // Debug.Log(formatted);
             }
 
             AnimateSolve(solutionPath);
-            // CheckWin();
         }
         else
         {
             Debug.Log("No solution exists.");
         }
-
-        // AnimateSolve(solutionPath);
     }
 
     void AnimateSolve(List<string> solution)
     {
-        StartCoroutine(AnimateSolveCoroutine(solution));   
+        StartCoroutine(AnimateSolveCoroutine(solution));
     }
 
     IEnumerator AnimateSolveCoroutine(List<string> solution)
     {
+        solveB.enabled = false;
+        hintB.enabled = false;
         int currentMove = 0;
         bool moveDone = false;
 
@@ -432,26 +443,26 @@ public class BossMgr : MonoBehaviour
     void CheckWin()
     {
         string result = string.Join("", boardState);
-        // Debug.Log("Result: " + result);
         if (result == goalState && gameDone == false)
         {
             Debug.Log("You WIN!!!");
             Cutin.SetActive(true);
-            // cutinAni = Cutin.GetComponent<Animator>();
             Health mHealth = currentMonster.GetComponent<Health>();
-            if(hintUsed == false && solveUsed == false)
+            if (hintUsed == false && solveUsed == false)
             {
                 mHealth.DealDamage(3);
             }
-            if(hintUsed == true && solveUsed == false)
+            if (hintUsed == true && solveUsed == false)
             {
                 mHealth.DealDamage(2);
             }
-            if(solveUsed == true)
+            if (solveUsed == true)
             {
                 mHealth.DealDamage(1);
-            }            
+            }
             gameDone = true;
+            solveB.enabled = true;
+            hintB.enabled = true;
         }
     }
     void MoveTile(string direction)
@@ -501,7 +512,7 @@ public class BossMgr : MonoBehaviour
                     boardState[foundIndex] = 0;
                     turns += 1;
                     turnsTxt.text = turns.ToString();
-                     if(turns % 10 == 0)
+                    if (turns % 15 == 0)
                         slash.SetActive(true);
                 }
                 // }
@@ -545,7 +556,7 @@ public class BossMgr : MonoBehaviour
                     boardState[foundIndex] = 0;
                     turns += 1;
                     turnsTxt.text = turns.ToString();
-                     if(turns % 10 == 0)
+                    if (turns % 15 == 0)
                         slash.SetActive(true);
                 }
                 break;
@@ -591,7 +602,7 @@ public class BossMgr : MonoBehaviour
                     boardState[foundIndex] = 0;
                     turns += 1;
                     turnsTxt.text = turns.ToString();
-                     if(turns % 10 == 0)
+                    if (turns % 15 == 0)
                         slash.SetActive(true);
                 }
                 break;
@@ -637,7 +648,7 @@ public class BossMgr : MonoBehaviour
                     boardState[foundIndex] = 0;
                     turns += 1;
                     turnsTxt.text = turns.ToString();
-                    if(turns % 10 == 0)
+                    if (turns % 15 == 0)
                         slash.SetActive(true);
                 }
                 break;
@@ -881,5 +892,5 @@ public class BossMgr : MonoBehaviour
         hintUsed = true;
     }
 
-    
+
 }

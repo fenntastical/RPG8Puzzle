@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//
+// Author: Fenn Edmonds
+// Purpose: Resets the donotload when you start a new game from the main menu
+//
+
 public class StoreDealer : MonoBehaviour
 {
     public GameObject dataLoad;
@@ -36,6 +41,6 @@ public class StoreDealer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

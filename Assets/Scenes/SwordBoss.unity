@@ -3543,7 +3543,6 @@ MonoBehaviour:
   - {fileID: 1528638878}
   - {fileID: 1131655065}
   - {fileID: 1805425588}
-  - {fileID: 735869785}
   boardState: 010000000200000003000000040000000500000006000000070000000000000008000000
   solver: {fileID: 1183434313}
   turnsTxt: {fileID: 891614424}
@@ -3559,6 +3558,8 @@ MonoBehaviour:
   playerHealth: {fileID: 1651792401}
   endless: 0
   SnHHolder: {fileID: 1183434315}
+  solveB: {fileID: 1144420608}
+  hintB: {fileID: 1988499765}
 --- !u!1 &1199200929
 GameObject:
   m_ObjectHideFlags: 0
@@ -4095,7 +4096,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Beware! Every 10th move [REDACTED] will attack.
+  m_text: Beware! Every 15th move [REDACTED] will attack.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ce029c25b7f0b274388f8c054396a95c, type: 2}
   m_sharedMaterial: {fileID: -6721251672449822246, guid: ce029c25b7f0b274388f8c054396a95c, type: 2}

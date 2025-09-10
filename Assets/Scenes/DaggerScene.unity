@@ -3342,6 +3342,8 @@ MonoBehaviour:
   startTime: 0
   endless: 0
   SnHHolder: {fileID: 1183434317}
+  solveB: {fileID: 1144420608}
+  hintB: {fileID: 1988499765}
 --- !u!114 &1183434317
 MonoBehaviour:
   m_ObjectHideFlags: 0

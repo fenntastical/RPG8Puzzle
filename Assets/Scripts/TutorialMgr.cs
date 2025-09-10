@@ -7,6 +7,11 @@ using TMPro;
 using System;
 using UnityEngine.SceneManagement;
 
+//
+// Author: Fenn Edmonds
+// Purpose: Controls the tutorial level
+//
+
 public class TutorialMgr : MonoBehaviour
 {
     public int selectedTile = 10;
@@ -43,6 +48,8 @@ public class TutorialMgr : MonoBehaviour
     public Dialogue dialogue;
     bool inprogressStart = false;
 
+    public GameObject infoText;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -53,6 +60,7 @@ public class TutorialMgr : MonoBehaviour
         SetupBoard();
         cutinAni = Cutin.GetComponent<Animator>();
         Cutin.SetActive(false);
+        infoText.SetActive(false);
         // dialogue.StartDialogue();
     }
 
@@ -62,38 +70,40 @@ public class TutorialMgr : MonoBehaviour
         if (inprogressStart == false)
             dialogue.StartDialogue();
         inprogressStart = true;
+        if (firstDialogue)
+        { infoText.SetActive(true);}
         if (Input.GetMouseButtonDown(0) && firstDialogue == true)
-        {
-            Vector3 mousePos = Input.mousePosition;
-            Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
-
-            RaycastHit2D hit = Physics2D.Raycast(worldPos, Vector2.zero);
-
-            if (hit.collider != null)
             {
-                TileMgr tile = hit.collider.GetComponent<TileMgr>();
-                if (tile != null)
+                Vector3 mousePos = Input.mousePosition;
+                Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
+
+                RaycastHit2D hit = Physics2D.Raycast(worldPos, Vector2.zero);
+
+                if (hit.collider != null)
                 {
-                    selectedTile = tile.tileNumber;
-                    foreach (TileMgr tileChange in Tiles)
+                    TileMgr tile = hit.collider.GetComponent<TileMgr>();
+                    if (tile != null)
                     {
-                        tileChange.GetComponent<SpriteRenderer>().color = Color.white;
+                        selectedTile = tile.tileNumber;
+                        foreach (TileMgr tileChange in Tiles)
+                        {
+                            tileChange.GetComponent<SpriteRenderer>().color = Color.white;
+                        }
+                        tile.GetComponent<SpriteRenderer>().color = Color.red;
+                        Debug.Log("Hit " + tile.tileNumber);
+                        selected = true;
                     }
-                    tile.GetComponent<SpriteRenderer>().color = Color.red;
-                    Debug.Log("Hit " + tile.tileNumber);
-                    selected = true;
-                }
-                if (tile == null || tile.tileNumber == 0)
-                {
-                    foreach (TileMgr tileChange in Tiles)
+                    if (tile == null || tile.tileNumber == 0)
                     {
-                        tileChange.GetComponent<SpriteRenderer>().color = Color.white;
+                        foreach (TileMgr tileChange in Tiles)
+                        {
+                            tileChange.GetComponent<SpriteRenderer>().color = Color.white;
+                        }
+                        selectedTile = 10;
+                        selected = false;
                     }
-                    selectedTile = 10;
-                    selected = false;
                 }
             }
-        }
 
         if (selected)
         {
@@ -123,6 +133,7 @@ public class TutorialMgr : MonoBehaviour
             if (cutinDone)
             {
                 firstDialogue = false;
+                infoText.SetActive(false);
                 // string[] newD = new string
                 // Array.Clear(dialogue.lines, 0, dialogue.lines.Length);
                 // dialogue.lines[0] = "Nice Job! Now good luck on your own!";
@@ -378,5 +389,5 @@ public class TutorialMgr : MonoBehaviour
         }
         tile.transform.position = targetPosition;
     }
-    
+
 }

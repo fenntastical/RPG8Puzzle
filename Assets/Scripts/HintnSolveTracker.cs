@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//
+// Author: Fenn Edmonds
+// Purpose: Tracks the base amount of solves and hints throughout the game
+//
+
 public class HintnSolveTracker : MonoBehaviour
 {
     public int baseHints = 3;
@@ -15,6 +20,6 @@ public class HintnSolveTracker : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

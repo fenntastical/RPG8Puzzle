@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+//
+// Author: Fenn Edmonds
+// Purpose: Controls the solves and hints for the dagger path, sorry again poorly named it was a bit rushed
+//
+
 public class SolvesNHintsDagger : MonoBehaviour
 {
 

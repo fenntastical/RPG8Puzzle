@@ -5,11 +5,17 @@ using UnityEngine.Tilemaps;
 using System.Linq;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+//
+// Author: Fenn Edmonds
+// Purpose: Controls the Dagger regular gameplay
+//
 
 public class DaggerGameMgr : MonoBehaviour
 {
     // Start is called before the first frame update
-        public int selectedTile = 10;
+    public int selectedTile = 10;
     // public List<GameObject> mainTiles;
     public List<TileMgr> Tiles;
     float tileMove = 22.5f;
@@ -58,6 +64,8 @@ public class DaggerGameMgr : MonoBehaviour
     public bool endless = false;
 
     public SolvesNHintsDagger SnHHolder;
+    public Button solveB;
+    public Button hintB;
 
     // Start is called before the first frame update
     void Start()
@@ -67,6 +75,9 @@ public class DaggerGameMgr : MonoBehaviour
         gameDone = false;
         // turnsTxt.text = turns.ToString();
         RandomizePuzzle();
+        string result = string.Join("", boardState);
+        if (result == goalState)
+        { RandomizePuzzle(); }
         SetupBoard();
         SpawnMonster();
         cutinAni = Cutin.GetComponent<Animator>();
@@ -152,6 +163,9 @@ public class DaggerGameMgr : MonoBehaviour
                 if (monsterDefeated == false)
                 {
                     RandomizePuzzle();
+                    string result = string.Join("", boardState);
+                    if (result == goalState)
+                    { RandomizePuzzle(); }
                     SetupBoard();
                     startTime = 0;
                     // turnsTxt.text = startTime.ToString();
@@ -163,7 +177,7 @@ public class DaggerGameMgr : MonoBehaviour
 
                 if (monsterDefeated == true)
                 {
-                    if(winCounter == winCon - 1)
+                    if (winCounter == winCon - 1)
                     {
                         SnHHolder.UpdateStores();
                         if (endless)
@@ -177,6 +191,9 @@ public class DaggerGameMgr : MonoBehaviour
                     if (winCounter != winCon - 1)
                     {
                         RandomizePuzzle();
+                        string result = string.Join("", boardState);
+                        if (result == goalState)
+                        { RandomizePuzzle(); }
                         SetupBoard();
                         SpawnMonster();
                         startTime = 0;
@@ -237,16 +254,18 @@ public class DaggerGameMgr : MonoBehaviour
             case 1:
                 currentMonster = Instantiate(monsterList[1], new Vector3(106.2f, -3.1f, 0), transform.rotation);
                 break;
-            
+
             case 2:
                 currentMonster = Instantiate(monsterList[2], new Vector3(106.2f, -8.7f, 0), transform.rotation);
-            break;
+                break;
         }
         // currentMonster = Instantiate(monsterList[randomM], new Vector3(106.2f, -35f, 0), transform.rotation);
     }
 
     public void SolvePuzzle()
     {
+        solveB.enabled = false;
+        hintB.enabled = false;
         int[,] CurrentPuzzle = {
             { boardState[0], boardState[1], boardState[2] },
             { boardState[3], boardState[4], boardState[5] },
@@ -288,7 +307,7 @@ public class DaggerGameMgr : MonoBehaviour
 
     void AnimateSolve(List<string> solution)
     {
-        StartCoroutine(AnimateSolveCoroutine(solution));   
+        StartCoroutine(AnimateSolveCoroutine(solution));
     }
 
     IEnumerator AnimateSolveCoroutine(List<string> solution)
@@ -431,7 +450,7 @@ public class DaggerGameMgr : MonoBehaviour
             Cutin.SetActive(true);
             // cutinAni = Cutin.GetComponent<Animator>();
             DaggerHealth mHealth = currentMonster.GetComponent<DaggerHealth>();
-            if(hintUsed == false && solveUsed == false)
+            if (hintUsed == false && solveUsed == false)
             {
                 mHealth.DealDamage(3);
                 SaHTracker.solves += 1;
@@ -439,20 +458,22 @@ public class DaggerGameMgr : MonoBehaviour
                 SaHTracker.UpdateText();
 
             }
-            if(hintUsed == true && solveUsed == false)
+            if (hintUsed == true && solveUsed == false)
             {
                 mHealth.DealDamage(2);
                 SaHTracker.hints += 3;
                 SaHTracker.UpdateText();
             }
-            if(solveUsed == true)
+            if (solveUsed == true)
             {
                 mHealth.DealDamage(1);
                 SaHTracker.hints += 1;
                 SaHTracker.UpdateText();
             }
-            
+
             gameDone = true;
+            solveB.enabled = true;
+            hintB.enabled = true;
         }
     }
     void MoveTile(string direction)

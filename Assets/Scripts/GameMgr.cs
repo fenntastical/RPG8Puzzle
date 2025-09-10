@@ -5,8 +5,12 @@ using UnityEngine.Tilemaps;
 using System.Linq;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-
+//
+// Author: Fenn Edmonds
+// Purpose: Controls the Sword regular gameplay, Sorry this is named poorly
+//
 public class GameMgr : MonoBehaviour
 {
 
@@ -58,6 +62,9 @@ public class GameMgr : MonoBehaviour
     
     public SolvesNHints SnHHolder;
 
+    public Button solveB;
+    public Button hintB;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -66,8 +73,12 @@ public class GameMgr : MonoBehaviour
         gameDone = false;
         turnsTxt.text = turns.ToString();
         RandomizePuzzle();
+        string result = string.Join("", boardState);
+        if (result == goalState)
+        { RandomizePuzzle(); }
         SetupBoard();
         SpawnMonster();
+        Debug.Log("We made it to spawn");
         cutinAni = Cutin.GetComponent<Animator>();
         Cutin.SetActive(false);
         hintBox.SetActive(false);
@@ -144,6 +155,9 @@ public class GameMgr : MonoBehaviour
                 if (monsterDefeated == false)
                 {
                     RandomizePuzzle();
+                    string result = string.Join("", boardState);
+                    if (result == goalState)
+                    { RandomizePuzzle(); }
                     SetupBoard();
                     turns = 0;
                     turnsTxt.text = turns.ToString();
@@ -168,6 +182,9 @@ public class GameMgr : MonoBehaviour
                     if (winCounter != winCon - 1)
                     {
                         RandomizePuzzle();
+                        string result = string.Join("", boardState);
+                        if (result == goalState)
+                        { RandomizePuzzle(); }
                         SetupBoard();
                         SpawnMonster();
                         turns = 0;
@@ -239,6 +256,8 @@ public class GameMgr : MonoBehaviour
 
     public void SolvePuzzle()
     {
+        solveB.enabled = false;
+        hintB.enabled = false;
         int[,] CurrentPuzzle = {
             { boardState[0], boardState[1], boardState[2] },
             { boardState[3], boardState[4], boardState[5] },
@@ -423,7 +442,7 @@ public class GameMgr : MonoBehaviour
             Cutin.SetActive(true);
             // cutinAni = Cutin.GetComponent<Animator>();
             Health mHealth = currentMonster.GetComponent<Health>();
-            if(hintUsed == false && solveUsed == false)
+            if (hintUsed == false && solveUsed == false)
             {
                 mHealth.DealDamage(3);
                 SaHTracker.solves += 1;
@@ -431,20 +450,22 @@ public class GameMgr : MonoBehaviour
                 SaHTracker.UpdateText();
 
             }
-            if(hintUsed == true && solveUsed == false)
+            if (hintUsed == true && solveUsed == false)
             {
                 mHealth.DealDamage(2);
                 SaHTracker.hints += 3;
                 SaHTracker.UpdateText();
             }
-            if(solveUsed == true)
+            if (solveUsed == true)
             {
                 mHealth.DealDamage(1);
                 SaHTracker.hints += 1;
                 SaHTracker.UpdateText();
             }
-            
+
             gameDone = true;
+            solveB.enabled = true;
+            hintB.enabled = true;
         }
     }
     void MoveTile(string direction)

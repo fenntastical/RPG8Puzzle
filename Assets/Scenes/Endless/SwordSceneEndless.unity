@@ -3475,6 +3475,8 @@ MonoBehaviour:
   SaHTracker: {fileID: 1183434315}
   endless: 1
   SnHHolder: {fileID: 1183434315}
+  solveB: {fileID: 1144420608}
+  hintB: {fileID: 1988499765}
 --- !u!114 &1183434315
 MonoBehaviour:
   m_ObjectHideFlags: 0

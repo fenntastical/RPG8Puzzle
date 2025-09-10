@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+
+//
+// Author: Fenn Edmonds
+// Purpose: Controls the Tutorial Dialogue
+//
+
 public class Dialogue : MonoBehaviour
 {
     public TextMeshProUGUI textComponent;
@@ -104,18 +110,18 @@ public class Dialogue : MonoBehaviour
             // GameEventsManager.instance.playerEvents.EnablePlayerMovement();
         }
     }
-    
+
     public void StartDialogue2()
     {
-    //     GameEventsManager.instance.miscEvents.PatronTalked();
+        //     GameEventsManager.instance.miscEvents.PatronTalked();
         textComponent.text = string.Empty;
         index = 0;
         textbox.isVisible = true;
         inprogress = true;
-    //     GameEventsManager.instance.playerEvents.DisablePlayerMovement();
+        //     GameEventsManager.instance.playerEvents.DisablePlayerMovement();
         StartCoroutine(TypeLine2());
-    //     // for(int i = 0; i < lines.Length; i++)
-    //     //     NextLine();
+        //     // for(int i = 0; i < lines.Length; i++)
+        //     //     NextLine();
     }
 
     IEnumerator TypeLine2()
@@ -146,5 +152,5 @@ public class Dialogue : MonoBehaviour
             // GameEventsManager.instance.playerEvents.EnablePlayerMovement();
         }
     }
-    
+
 }

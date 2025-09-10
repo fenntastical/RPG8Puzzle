@@ -3687,6 +3687,8 @@ MonoBehaviour:
   startTime: 0
   endless: 1
   SnHHolder: {fileID: 1183434314}
+  solveB: {fileID: 1144420608}
+  hintB: {fileID: 1988499765}
 --- !u!1 &1199200929
 GameObject:
   m_ObjectHideFlags: 0
