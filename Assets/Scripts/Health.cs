@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 //
-// Author: Fenn Edmonds
+// Author: Fenn Edmonds autumne@unr.edu
 // Purpose: Controls the health of sword enemies
 //
 

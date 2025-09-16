@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //
-// Author: Fenn Edmonds
+// Author: Fenn Edmonds autumne@unr.edu
 // Purpose: Moves panels around
 //
 

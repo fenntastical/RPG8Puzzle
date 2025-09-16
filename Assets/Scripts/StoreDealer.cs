@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //
-// Author: Fenn Edmonds
+// Author: Fenn Edmonds autumne@unr.edu
 // Purpose: Resets the donotload when you start a new game from the main menu
 //
 

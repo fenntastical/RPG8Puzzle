@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 
 //
-// Author: Fenn Edmonds
+// Author: Fenn Edmonds autumne@unr.edu
 // Purpose: Controls the solves and hints for the dagger path, sorry again poorly named it was a bit rushed
 //
 

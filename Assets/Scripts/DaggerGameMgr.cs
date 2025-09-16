@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 //
-// Author: Fenn Edmonds
+// Author: Fenn Edmonds autumne@unr.edu
 // Purpose: Controls the Dagger regular gameplay
 //
 

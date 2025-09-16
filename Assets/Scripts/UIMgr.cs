@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 
 //
-// Author: Fenn Edmonds
+// Author: Fenn Edmonds autumne@unr.edu
 // Purpose: Controls the ui at some points
 //
 

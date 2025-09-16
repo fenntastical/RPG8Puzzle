@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //
-// Author: Reference from Geeks4Geeks
+// Author: Reference from Geeks4Geeks autumne@unr.edu
 // Purpose: Solves the 8 puzzle with bfs
 //
 

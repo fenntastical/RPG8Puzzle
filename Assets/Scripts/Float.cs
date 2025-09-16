@@ -4,7 +4,7 @@ using System.Collections;
 using TMPro;
 
 //
-// Author: Fenn Edmonds
+// Author: Fenn Edmonds autumne@unr.edu
 // Purpose: Makes the UI float
 //
 

@@ -8,7 +8,7 @@ using System;
 using UnityEngine.SceneManagement;
 
 //
-// Author: Fenn Edmonds
+// Author: Fenn Edmonds autumne@unr.edu
 // Purpose: Controls the tutorial level
 //
 
